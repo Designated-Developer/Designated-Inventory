@@ -5,7 +5,6 @@
     <title>Inventory Management App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <style>
         body {
@@ -212,7 +211,7 @@
             codeReader.decodeFromVideoDevice(null, 'scanner', (result, err) => {
                 if (result) {
                     document.getElementById('barcode').value = result.text;
-                    if (navigator.vibrate) navigator.vibrate(200);
+                    if (navigator.vibrate) navigator.vibrate(200); // Vibration feedback
                     codeReader.reset();
                     document.getElementById('qrCodeScannerModal').style.display = 'none';
                     document.getElementById('quantityModal').style.display = 'flex';
