@@ -6,33 +6,87 @@
     <title>Non-Alcoholic Beer Inventory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'SF Pro', sans-serif;
+            background-color: #F7F8FA; /* Apple-like background */
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .neon-button {
-            background: linear-gradient(45deg, #ff6ec4, #7873f5);
+        header {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+        .button {
+            padding: 12px 24px;
+            background-color: #007AFF;
             color: white;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
             border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            box-shadow: 0 0 8px rgba(255, 110, 196, 0.5), 0 0 15px rgba(120, 115, 245, 0.5);
-            transition: all 0.3s ease;
         }
-        .neon-button:hover {
-            box-shadow: 0 0 15px rgba(255, 110, 196, 0.7), 0 0 25px rgba(120, 115, 245, 0.7);
+        .button:hover {
+            background-color: #005BB5;
         }
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 14px;
+        .input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid #D1D1D6;
+            font-size: 16px;
+            margin: 8px 0;
+            background-color: white;
         }
-        /* Crosshair Styling */
+        .input:focus {
+            outline: none;
+            border-color: #007AFF;
+        }
+        .scanner-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .scanner-modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .scanner-container {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            text-align: center;
+        }
         .crosshair {
             position: absolute;
             top: 50%;
@@ -63,108 +117,84 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100">
-    <div class="container mx-auto p-4">
-        <header class="flex justify-between items-center py-4">
-            <h1 class="text-3xl font-bold text-white">Non-Alcoholic Beer Inventory</h1>
-            <div class="flex space-x-4">
-                <button id="scanButton" class="neon-button flex items-center btn-small">
-                    <i class="fas fa-camera mr-2"></i> Scan
-                </button>
-                <button id="exportButton" class="neon-button flex items-center btn-small">
-                    <i class="fas fa-file-csv mr-2"></i> Export CSV
-                </button>
+<body>
+    <div class="container">
+        <header>
+            <h1>Non-Alcoholic Beer Inventory</h1>
+            <div>
+                <button id="scanButton" class="button">Scan</button>
+                <button id="exportButton" class="button">Export CSV</button>
             </div>
         </header>
 
         <main>
-            <section class="mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-white">Add New Item</h2>
-                <form id="itemForm" class="glass p-4 rounded-md shadow-md">
-                    <div class="mb-4">
-                        <label for="itemName" class="block text-sm font-medium text-gray-300">Item Name</label>
-                        <input type="text" id="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter item name">
-                    </div>
-                    <div class="mb-4">
-                        <label for="quantity" class="block text-sm font-medium text-gray-300">Quantity</label>
-                        <input type="number" id="quantity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter quantity">
-                    </div>
-                    <div class="mb-4">
-                        <label for="barcode" class="block text-sm font-medium text-gray-300">Barcode/QR Code</label>
-                        <input type="text" id="barcode" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter barcode or QR code">
-                    </div>
-                    <button type="submit" class="neon-button">Add Item</button>
-                </form>
-            </section>
+            <form id="itemForm">
+                <input type="text" id="itemName" class="input" placeholder="Item Name">
+                <input type="number" id="quantity" class="input" placeholder="Quantity">
+                <input type="text" id="barcode" class="input" placeholder="Barcode">
+                <button type="submit" class="button">Add Item</button>
+            </form>
 
-            <section>
-                <h2 class="text-2xl font-semibold mb-4 text-white">Inventory List</h2>
-                <ul id="inventoryList" class="glass p-4 rounded-md shadow-md">
-                    <!-- Inventory items will be dynamically added here -->
-                </ul>
-            </section>
+            <ul id="inventoryList">
+                <!-- Inventory items will appear here -->
+            </ul>
         </main>
     </div>
 
     <!-- Modal for QR Code Scanner -->
-    <div id="qrCodeScannerModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
-        <div class="bg-white p-4 rounded-md shadow-md w-11/12 md:w-1/2 relative">
+    <div id="qrCodeScannerModal" class="scanner-modal">
+        <div class="scanner-container">
             <video id="scanner" style="width: 100%; height: 300px;"></video>
-            <!-- Crosshairs -->
             <div class="crosshair"></div>
-            <button id="closeScanner" class="mt-4 bg-red-500 text-white px-4 py-2 rounded-md">Close</button>
+            <button id="closeScanner" class="button" style="margin-top: 16px;">Close</button>
         </div>
     </div>
 
     <script>
         let inventory = [];
 
-        // Initialize ZXing scanner
         const codeReader = new ZXing.BrowserBarcodeReader();
         let currentScanner = null;
 
         document.getElementById('scanButton').addEventListener('click', function() {
-            // Show the QR Code Scanner Modal
-            document.getElementById('qrCodeScannerModal').classList.remove('hidden');
+            // Open scanner modal
+            document.getElementById('qrCodeScannerModal').classList.add('active');
             const videoElement = document.getElementById('scanner');
-            const constraints = {
-                video: { facingMode: 'environment' } // Use rear camera
-            };
+            const constraints = { video: { facingMode: 'environment' } };
 
-            navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-                videoElement.srcObject = stream;
-                currentScanner = codeReader.decodeFromVideoDevice(null, 'scanner', (result, err) => {
-                    if (result) {
-                        document.getElementById('barcode').value = result.text;
-                        // Check if the barcode matches any product
-                        const product = beerDatabase.find(p => p.barcode === result.text);
-                        if (product) {
-                            document.getElementById('itemName').value = product.name;
-                            if (navigator.vibrate) {
-                                navigator.vibrate(200); // Vibrate for 200ms on success
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then((stream) => {
+                    videoElement.srcObject = stream;
+                    currentScanner = codeReader.decodeFromVideoDevice(null, 'scanner', (result, err) => {
+                        if (result) {
+                            document.getElementById('barcode').value = result.text;
+                            const product = beerDatabase.find(p => p.barcode === result.text);
+                            if (product) {
+                                document.getElementById('itemName').value = product.name;
+                                if (navigator.vibrate) {
+                                    navigator.vibrate(200); // Vibrate on success
+                                }
+                            } else {
+                                alert('Product not found.');
                             }
-                        } else {
-                            alert('Product not found for this barcode.');
                         }
-                    }
-                    if (err && !(err instanceof ZXing.NotFoundException)) {
-                        console.error(err);
-                    }
+                        if (err && !(err instanceof ZXing.NotFoundException)) {
+                            console.error(err);
+                        }
+                    });
+                })
+                .catch((err) => {
+                    console.error('Error accessing camera: ', err);
                 });
-            }).catch((err) => {
-                console.error("Error accessing camera: ", err);
-            });
         });
 
-        // Close scanner modal
         document.getElementById('closeScanner').addEventListener('click', function() {
             if (currentScanner) {
-                currentScanner.reset(); // Stop scanning when closing
+                currentScanner.reset();
             }
-            document.getElementById('qrCodeScannerModal').classList.add('hidden');
+            document.getElementById('qrCodeScannerModal').classList.remove('active');
         });
 
-        // Add item to inventory
         document.getElementById('itemForm').addEventListener('submit', function(event) {
             event.preventDefault();
             addItemToInventory();
@@ -185,19 +215,11 @@
             inventoryList.innerHTML = '';
             inventory.forEach(item => {
                 const li = document.createElement('li');
-                li.className = 'flex justify-between items-center py-2 border-b border-gray-200';
-                li.innerHTML = `
-                    <div>
-                        <h3 class="text-lg font-medium text-white">${item.itemName}</h3>
-                        <p class="text-sm text-gray-400">Quantity: ${item.quantity}</p>
-                        <p class="text-sm text-gray-400">Barcode: ${item.barcode}</p>
-                    </div>
-                `;
+                li.textContent = `${item.itemName} - Quantity: ${item.quantity} - Barcode: ${item.barcode}`;
                 inventoryList.appendChild(li);
             });
         }
 
-        // Export CSV functionality
         document.getElementById('exportButton').addEventListener('click', function() {
             const csvContent = "data:text/csv;charset=utf-8," + inventory.map(item => 
                 `${item.itemName},${item.quantity},${item.barcode}`
