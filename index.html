@@ -165,7 +165,7 @@
         function renderInventory() {
             const inventoryList = document.getElementById('inventoryList');
             inventoryList.innerHTML = '';
-            inventory.forEach(item => {
+            inventory.forEach((item, index) => {
                 const li = document.createElement('li');
                 li.className = 'flex justify-between items-center py-2 border-b border-gray-200';
                 li.innerHTML = `
@@ -174,9 +174,27 @@
                         <p class="text-sm text-gray-400">Quantity: ${item.quantity}</p>
                         <p class="text-sm text-gray-400">Barcode: ${item.barcode}</p>
                     </div>
+                    <div class="flex space-x-2">
+                        <button onclick="editItem(${index})" class="neon-button btn-small text-blue-500">Edit</button>
+                        <button onclick="deleteItem(${index})" class="neon-button btn-small text-red-500">Delete</button>
+                    </div>
                 `;
                 inventoryList.appendChild(li);
             });
+        }
+
+        function editItem(index) {
+            const item = inventory[index];
+            document.getElementById('itemName').value = item.itemName;
+            document.getElementById('quantity').value = item.quantity;
+            document.getElementById('barcode').value = item.barcode;
+            inventory.splice(index, 1);  // Remove item from the array to allow editing
+            renderInventory();
+        }
+
+        function deleteItem(index) {
+            inventory.splice(index, 1); // Remove item from the inventory
+            renderInventory();
         }
 
         document.getElementById('exportButton').addEventListener('click', function() {
