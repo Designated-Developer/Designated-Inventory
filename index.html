@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -5,130 +6,45 @@
     <title>Inventory Management App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f5f5f7;
-            color: #333;
-            margin: 0;
-            padding: 0;
         }
         .glass {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 15px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 20px;
         }
         .neon-button {
             background: linear-gradient(45deg, #ff6ec4, #7873f5);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            box-shadow: 0 0 12px rgba(255, 110, 196, 0.5), 0 0 20px rgba(120, 115, 245, 0.5);
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 110, 196, 0.5), 0 0 20px rgba(120, 115, 245, 0.5);
             transition: all 0.3s ease;
-            font-size: 16px;
         }
         .neon-button:hover {
-            box-shadow: 0 0 24px rgba(255, 110, 196, 0.7), 0 0 30px rgba(120, 115, 245, 0.7);
+            box-shadow: 0 0 20px rgba(255, 110, 196, 0.7), 0 0 30px rgba(120, 115, 245, 0.7);
         }
-        .card {
-            background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin: 10px 0;
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .card-header h2 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-        .input-field, .select-field {
-            border: 1px solid #d1d1d6;
-            border-radius: 12px;
-            padding: 12px;
-            width: 100%;
-            margin-bottom: 12px;
-            background-color: #f5f5f7;
-            font-size: 16px;
-        }
-        .input-field:focus, .select-field:focus {
-            outline: none;
-            border-color: #4e7dff;
-            background-color: #ffffff;
-        }
-        .input-field {
-            color: #333;
-        }
-        .modal {
-            background-color: rgba(0, 0, 0, 0.5);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: #ffffff;
-            border-radius: 20px;
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h2 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-        .modal-body {
-            margin-top: 15px;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 640px) {
-            .card-header h2 {
-                font-size: 20px;
-            }
-            .neon-button {
-                padding: 10px 20px;
-                font-size: 14px;
-            }
-            .input-field {
-                padding: 10px;
-                font-size: 14px;
-            }
-            .modal-content {
-                padding: 20px;
-            }
-            .modal-header h2 {
-                font-size: 20px;
-            }
-            .modal-body input {
-                padding: 10px;
-                font-size: 14px;
-            }
+        .focus-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80%;
+            height: 80px;
+            border: 3px solid #ff6ec4;
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
-<body>
-    <div class="container mx-auto p-6">
+<body class="bg-gray-900 text-gray-100">
+    <div class="container mx-auto p-4">
         <header class="flex justify-between items-center py-4">
-            <h1 class="text-3xl font-bold text-gray-800">Designated Inventory</h1>
-            <div class="flex space-x-6">
+            <h1 class="text-3xl font-bold text-white">Inventory Management</h1>
+            <div class="flex space-x-4">
                 <button id="scanButton" class="neon-button flex items-center">
                     <i class="fas fa-camera mr-2"></i> Scan
                 </button>
@@ -138,65 +54,65 @@
             </div>
         </header>
 
-        <section class="card">
-            <div class="card-header">
-                <h2>Add New Item</h2>
-            </div>
-            <form id="itemForm">
-                <input type="text" id="itemName" class="input-field" placeholder="Enter item name" required>
-                <input type="number" id="quantity" class="input-field" placeholder="Enter quantity" required>
-                <input type="text" id="barcode" class="input-field" placeholder="Enter barcode or QR code" required>
-                <input type="text" id="description" class="input-field" placeholder="Enter description or category" required>
-                <button type="submit" class="neon-button w-full">Add Item</button>
-            </form>
-        </section>
+        <main>
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold mb-4 text-white">Add New Item</h2>
+                <form id="itemForm" class="glass p-4 rounded-md shadow-md">
+                    <div class="mb-4">
+                        <label for="itemName" class="block text-sm font-medium text-gray-300">Item Name</label>
+                        <input type="text" id="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter item name">
+                    </div>
+                    <div class="mb-4">
+                        <label for="quantity" class="block text-sm font-medium text-gray-300">Quantity</label>
+                        <input type="number" id="quantity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter quantity">
+                    </div>
+                    <div class="mb-4">
+                        <label for="barcode" class="block text-sm font-medium text-gray-300">Barcode/QR Code</label>
+                        <input type="text" id="barcode" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter barcode or QR code">
+                    </div>
+                    <div class="mb-4">
+                        <label for="description" class="block text-sm font-medium text-gray-300">Description/Category</label>
+                        <input type="text" id="description" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter description or category">
+                    </div>
+                    <button type="submit" class="neon-button">Add Item</button>
+                </form>
+            </section>
 
-        <section class="card">
-            <div class="card-header">
-                <h2>Inventory List</h2>
-            </div>
-            <div class="mb-4">
-                <input type="text" id="searchInput" class="input-field" placeholder="Search by name or barcode">
-            </div>
-            <div class="mb-4">
-                <select id="filterCategory" class="select-field">
-                    <option value="">Filter by category</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Groceries">Groceries</option>
-                    <option value="Office Supplies">Office Supplies</option>
-                </select>
-            </div>
-            <ul id="inventoryList">
-                <!-- Inventory items will be dynamically added here -->
-            </ul>
-        </section>
+            <section>
+                <h2 class="text-2xl font-semibold mb-4 text-white">Inventory List</h2>
+                <div class="mb-4">
+                    <input type="text" id="searchInput" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Search by name or barcode">
+                </div>
+                <div class="mb-4">
+                    <select id="filterCategory" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white">
+                        <option value="">Filter by category</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Office Supplies">Office Supplies</option>
+                    </select>
+                </div>
+                <ul id="inventoryList" class="glass p-4 rounded-md shadow-md">
+                    <!-- Inventory items will be dynamically added here -->
+                </ul>
+            </section>
+        </main>
     </div>
 
     <!-- Modal for QR Code Scanner -->
-    <div id="qrCodeScannerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Scan Barcode</h2>
-                <button id="closeScanner" class="text-red-500 text-2xl">×</button>
-            </div>
+    <div id="qrCodeScannerModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white p-4 rounded-md shadow-md w-11/12 md:w-1/2 relative">
             <video id="scanner" style="width: 100%; height: 300px;"></video>
-            <div class="mt-4 text-center">
-                <button id="closeScannerModal" class="neon-button w-full">Close</button>
-            </div>
+            <div class="focus-frame"></div>
+            <button id="closeScanner" class="mt-4 bg-red-500 text-white px-4 py-2 rounded-md">Close</button>
         </div>
     </div>
 
-    <!-- Modal for Quantity Input -->
-    <div id="quantityModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Enter Quantity</h2>
-                <button id="closeQuantityModal" class="text-red-500 text-2xl">×</button>
-            </div>
-            <div class="modal-body">
-                <input type="number" id="quantityInput" class="input-field" placeholder="Enter quantity" required>
-                <button id="saveQuantity" class="neon-button w-full mt-4">Save</button>
-            </div>
+    <!-- Modal for Quantity Selector -->
+    <div id="quantityModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white p-4 rounded-md shadow-md w-11/12 md:w-1/2">
+            <h2 class="text-xl font-semibold mb-4 text-gray-900">Enter Quantity</h2>
+            <input type="number" id="quantityInput" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-gray-900" placeholder="Enter quantity">
+            <button id="saveQuantity" class="mt-4 bg-green-500 text-white px-4 py-2 rounded-md">Save</button>
         </div>
     </div>
 
@@ -204,29 +120,35 @@
         let inventory = [];
         let editingIndex = null;
 
-        // Event listeners and functions for managing items in inventory
         document.getElementById('scanButton').addEventListener('click', function() {
-            document.getElementById('qrCodeScannerModal').style.display = 'flex';
+            document.getElementById('qrCodeScannerModal').classList.remove('hidden');
             const codeReader = new ZXing.BrowserBarcodeReader();
             codeReader.decodeFromVideoDevice(null, 'scanner', (result, err) => {
                 if (result) {
                     document.getElementById('barcode').value = result.text;
-                    if (navigator.vibrate) navigator.vibrate(200); // Vibration feedback
+                    if (navigator.vibrate) {
+                        navigator.vibrate(200); // Vibration feedback for successful scan
+                    }
                     codeReader.reset();
-                    document.getElementById('qrCodeScannerModal').style.display = 'none';
-                    document.getElementById('quantityModal').style.display = 'flex';
+                    document.getElementById('qrCodeScannerModal').classList.add('hidden');
+                    document.getElementById('quantityModal').classList.remove('hidden');
+                }
+                if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error(err);
                 }
             });
         });
 
         document.getElementById('closeScanner').addEventListener('click', function() {
-            document.getElementById('qrCodeScannerModal').style.display = 'none';
+            const codeReader = new ZXing.BrowserBarcodeReader();
+            codeReader.reset();
+            document.getElementById('qrCodeScannerModal').classList.add('hidden');
         });
 
         document.getElementById('saveQuantity').addEventListener('click', function() {
             const quantity = document.getElementById('quantityInput').value;
             document.getElementById('quantity').value = quantity;
-            document.getElementById('quantityModal').style.display = 'none';
+            document.getElementById('quantityModal').classList.add('hidden');
             addItemToInventory();
         });
 
@@ -257,52 +179,18 @@
             inventoryList.innerHTML = '';
             inventory.forEach((item, index) => {
                 const li = document.createElement('li');
-                li.className = 'py-3 border-b border-gray-200';
+                li.classList.add('mb-4', 'border', 'p-4', 'rounded-md', 'shadow-sm', 'bg-gray-800');
                 li.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="text-lg font-semibold">${item.itemName}</h3>
-                            <p>Quantity: ${item.quantity}</p>
-                            <p>Barcode: ${item.barcode}</p>
-                            <p>Category: ${item.description}</p>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <button class="text-blue-500" onclick="editItem(${index})"><i class="fas fa-edit"></i></button>
-                            <button class="text-red-500" onclick="deleteItem(${index})"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
+                    <p><strong>Item Name:</strong> ${item.itemName}</p>
+                    <p><strong>Quantity:</strong> ${item.quantity}</p>
+                    <p><strong>Barcode:</strong> ${item.barcode}</p>
+                    <p><strong>Description:</strong> ${item.description}</p>
                 `;
                 inventoryList.appendChild(li);
             });
         }
 
-        function editItem(index) {
-            const item = inventory[index];
-            document.getElementById('itemName').value = item.itemName;
-            document.getElementById('quantity').value = item.quantity;
-            document.getElementById('barcode').value = item.barcode;
-            document.getElementById('description').value = item.description;
-            editingIndex = index;
-        }
-
-        function deleteItem(index) {
-            inventory.splice(index, 1);
-            renderInventory();
-        }
-
-        document.getElementById('exportButton').addEventListener('click', function() {
-            const csvContent = "data:text/csv;charset=utf-8," + inventory.map(item => 
-                `${item.itemName},${item.quantity},${item.barcode},${item.description}` 
-            ).join("\n");
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "inventory.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
+        renderInventory();
     </script>
 </body>
 </html>
