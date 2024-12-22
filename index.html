@@ -20,10 +20,11 @@
             background: linear-gradient(45deg, #ff6ec4, #7873f5);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 6px 12px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(255, 110, 196, 0.5), 0 0 20px rgba(120, 115, 245, 0.5);
             transition: all 0.3s ease;
+            font-size: 14px;
         }
         .neon-button:hover {
             box-shadow: 0 0 20px rgba(255, 110, 196, 0.7), 0 0 30px rgba(120, 115, 245, 0.7);
@@ -90,16 +91,23 @@
     </div>
 
     <script>
-        // Simulated product database (could be fetched from an API)
+        // Database of Non-Alcoholic Beers (with UPC codes)
         const productDatabase = {
-            "123456789": { name: "Designated Beer", category: "Non-Alcoholic Beer", quantity: 50 },
-            "987654321": { name: "Designated Wine", category: "Non-Alcoholic Wine", quantity: 30 },
-            "112233445": { name: "Designated Cocktail", category: "Non-Alcoholic Cocktails", quantity: 40 },
+            "012345678901": { name: "Heineken 0.0", category: "Non-Alcoholic Beer", quantity: 100 },
+            "023456789012": { name: "Budweiser Zero", category: "Non-Alcoholic Beer", quantity: 80 },
+            "034567890123": { name: "Beck's Blue", category: "Non-Alcoholic Beer", quantity: 75 },
+            "045678901234": { name: "Corona Cero", category: "Non-Alcoholic Beer", quantity: 60 },
+            "056789012345": { name: "Carlsberg 0.0", category: "Non-Alcoholic Beer", quantity: 50 },
             // Add more products here
         };
 
         const codeReader = new ZXing.BrowserMultiFormatReader();
         let isScanning = false;
+
+        // Start video and barcode scanning immediately on page load
+        window.onload = function() {
+            startScanning();
+        }
 
         // Initialize video stream and start barcode scanning
         function startScanning() {
