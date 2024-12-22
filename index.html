@@ -50,6 +50,26 @@
             width: 100%;
             height: auto;
         }
+        /* Custom Error Message Styles */
+        .error-message {
+            display: none;
+            background-color: #ff0000;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 16px;
+            position: relative;
+        }
+        .error-message button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100">
@@ -87,6 +107,12 @@
                 <option value="wine">Non-Alcoholic Wine</option>
                 <option value="cocktail">Non-Alcoholic Cocktails</option>
             </select>
+        </div>
+
+        <!-- Error message container -->
+        <div id="errorMessage" class="error-message">
+            Product not found for this barcode.
+            <button onclick="closeErrorMessage()">×</button>
         </div>
     </div>
 
@@ -144,9 +170,21 @@
                 if (navigator.vibrate) {
                     navigator.vibrate(200); // Vibrate for 200ms
                 }
+                // Close any error message if a valid product is found
+                closeErrorMessage();
             } else {
-                alert("Product not found for this barcode.");
+                showErrorMessage();
             }
+        }
+
+        // Show the error message
+        function showErrorMessage() {
+            document.getElementById("errorMessage").style.display = "block";
+        }
+
+        // Close the error message
+        function closeErrorMessage() {
+            document.getElementById("errorMessage").style.display = "none";
         }
 
         // Button to start scanning
