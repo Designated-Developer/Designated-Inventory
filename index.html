@@ -58,16 +58,11 @@
                 <button id="downloadCSV" class="neon-button flex items-center">
                     <i class="fas fa-file-csv mr-2"></i> Download CSV
                 </button>
+                <button id="sendEmail" class="neon-button flex items-center">
+                    <i class="fas fa-envelope mr-2"></i> Send CSV Email
+                </button>
             </div>
         </header>
-
-        <div id="productInfo" class="text-white py-4">
-            <h2 class="text-xl font-semibold">Product Information</h2>
-            <p id="productName">Product Name: <span class="font-bold" id="productDetailsName">N/A</span></p>
-            <p id="productCategory">Category: <span class="font-bold" id="productDetailsCategory">N/A</span></p>
-            <p id="productQuantity">Quantity: <span class="font-bold" id="productDetailsQuantity">N/A</span></p>
-        </div>
-
         <div class="my-4">
             <label for="category" class="block text-white text-lg mb-2">Filter by Category:</label>
             <select id="category" class="category-select">
@@ -77,71 +72,104 @@
                 <option value="cocktail">Non-Alcoholic Cocktails</option>
             </select>
         </div>
+
+        <div id="inventoryList" class="space-y-4">
+            <!-- Inventory items will be dynamically listed here -->
+        </div>
     </div>
 
     <script>
-        // Simulated product database (could be fetched from an API)
-        const productDatabase = {
-            "123456789": { name: "Designated Beer", category: "Non-Alcoholic Beer", quantity: 50 },
-            "987654321": { name: "Designated Wine", category: "Non-Alcoholic Wine", quantity: 30 },
-            "112233445": { name: "Designated Cocktail", category: "Non-Alcoholic Cocktails", quantity: 40 },
-            // Add more products here
-        };
+        // Sample Inventory Data
+        const inventory = [
+            { name: 'Non-Alcoholic Beer A', category: 'beer', quantity: 10, barcode: '1234567890' },
+            { name: 'Non-Alcoholic Wine B', category: 'wine', quantity: 15, barcode: '2345678901' },
+            { name: 'Non-Alcoholic Cocktail C', category: 'cocktail', quantity: 5, barcode: '3456789012' },
+            { name: 'Non-Alcoholic Beer D', category: 'beer', quantity: 20, barcode: '4567890123' }
+        ];
 
-        // Barcode scanning initialization
-        const codeReader = new ZXing.BrowserMultiFormatReader();
-        codeReader.listVideoInputDevices().then((videoInputDevices) => {
-            const firstDeviceId = videoInputDevices[0].deviceId;
-            codeReader.decodeFromVideoDevice(firstDeviceId, 'video', (result, error) => {
-                if (result) {
-                    // Barcode scanned successfully
-                    const barcode = result.text;
-                    handleBarcodeScan(barcode);
-                }
+        // Function to update the inventory display
+        function updateInventoryDisplay() {
+            const category = document.getElementById('category').value;
+            const filteredInventory = category === 'all' 
+                ? inventory 
+                : inventory.filter(item => item.category === category);
+
+            const inventoryList = document.getElementById('inventoryList');
+            inventoryList.innerHTML = '';
+            filteredInventory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'bg-gray-800 p-4 rounded-lg';
+                div.innerHTML = `
+                    <h2 class="text-xl font-bold text-white">${item.name}</h2>
+                    <p class="text-gray-400">Quantity: ${item.quantity}</p>
+                    <p class="text-gray-400">Barcode: ${item.barcode}</p>
+                `;
+                inventoryList.appendChild(div);
             });
-        }).catch(err => {
-            console.error("Error initializing scanner: ", err);
-        });
-
-        // Handle scanned barcode
-        function handleBarcodeScan(barcode) {
-            const product = productDatabase[barcode];
-            if (product) {
-                // Update UI with product details
-                document.getElementById('productDetailsName').textContent = product.name;
-                document.getElementById('productDetailsCategory').textContent = product.category;
-                document.getElementById('productDetailsQuantity').textContent = product.quantity;
-            } else {
-                // Barcode not found in the database
-                alert("Product not found for this barcode.");
-            }
         }
 
-        // Download CSV functionality
-        document.getElementById("downloadCSV").addEventListener("click", function () {
-            const csvContent = "Product Name,Category,Quantity\n" + 
-                               Object.values(productDatabase).map(product => 
-                                   `${product.name},${product.category},${product.quantity}`).join("\n");
+        // Function to generate CSV data
+        function generateCSV() {
+            const csvRows = [
+                ['Product Name', 'Category', 'Quantity', 'Barcode'],
+                ...inventory.map(item => [item.name, item.category, item.quantity, item.barcode])
+            ];
 
-            const blob = new Blob([csvContent], { type: "text/csv" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "inventory.csv";
-            link.click();
-        });
+            let csvContent = 'data:text/csv;charset=utf-8,';
+            csvRows.forEach(row => {
+                csvContent += row.join(',') + '\n';
+            });
 
-        // Email functionality (using mailto for email prompt)
-        document.getElementById("emailCSV").addEventListener("click", function () {
-            const csvContent = "Product Name,Category,Quantity\n" + 
-                               Object.values(productDatabase).map(product => 
-                                   `${product.name},${product.category},${product.quantity}`).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const downloadLink = document.createElement('a');
+            downloadLink.setAttribute('href', encodedUri);
+            downloadLink.setAttribute('download', 'inventory.csv');
+            downloadLink.click();
+        }
 
-            const email = "inventory@designateddrinks.com";  // Set your email here
-            const subject = "Inventory CSV";
-            const body = "Attached is the current inventory in CSV format:\n\n" + encodeURIComponent(csvContent);
+        // Function to trigger email with CSV attachment prompt
+        function sendCSVEmail() {
+            const csvRows = [
+                ['Product Name', 'Category', 'Quantity', 'Barcode'],
+                ...inventory.map(item => [item.name, item.category, item.quantity, item.barcode])
+            ];
 
-            window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${body}`;
-        });
+            let csvContent = 'data:text/csv;charset=utf-8,';
+            csvRows.forEach(row => {
+                csvContent += row.join(',') + '\n';
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const subject = 'Inventory CSV File';
+            const body = `Please find attached the inventory CSV file.\n\n${encodedUri}`;
+            const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+        }
+
+        // Function to start barcode scanning
+        function startBarcodeScanning() {
+            const codeReader = new ZXing.BrowserBarcodeReader();
+            codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
+                alert(result.text);
+            }).catch(err => {
+                console.error(err);
+            });
+        }
+
+        // Event listener for category filter
+        document.getElementById('category').addEventListener('change', updateInventoryDisplay);
+
+        // Event listener for CSV download
+        document.getElementById('downloadCSV').addEventListener('click', generateCSV);
+
+        // Event listener for send email
+        document.getElementById('sendEmail').addEventListener('click', sendCSVEmail);
+
+        // Event listener for barcode scanning
+        document.getElementById('scanButton').addEventListener('click', startBarcodeScanning);
+
+        // Initial inventory display
+        updateInventoryDisplay();
     </script>
 </body>
 </html>
