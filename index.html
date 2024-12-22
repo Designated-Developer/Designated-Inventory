@@ -6,214 +6,171 @@
     <title>Non-Alcoholic Beer Inventory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #1f2937;
-            color: white;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .neon-button {
             background: linear-gradient(45deg, #ff6ec4, #7873f5);
             color: white;
             border: none;
             padding: 8px 16px;
-            border-radius: 8px;
-            box-shadow: 0 0 12px rgba(255, 110, 196, 0.5), 0 0 24px rgba(120, 115, 245, 0.5);
+            border-radius: 5px;
+            box-shadow: 0 0 8px rgba(255, 110, 196, 0.5), 0 0 15px rgba(120, 115, 245, 0.5);
             transition: all 0.3s ease;
-            font-size: 16px;
-            display: inline-flex;
-            align-items: center;
         }
         .neon-button:hover {
-            box-shadow: 0 0 24px rgba(255, 110, 196, 0.7), 0 0 36px rgba(120, 115, 245, 0.7);
+            box-shadow: 0 0 15px rgba(255, 110, 196, 0.7), 0 0 25px rgba(120, 115, 245, 0.7);
         }
-        .focus-frame {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 80%;
-            height: 80px;
-            border: 3px solid #ff6ec4;
-            transform: translate(-50%, -50%);
-        }
-        .category-select {
-            background-color: #374151;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            color: #fff;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        #video {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-        .error-message {
-            display: none;
-            background-color: #ff4d4d;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-size: 18px;
-            position: relative;
-        }
-        .error-message button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 20px;
-        }
-        .product-info {
-            margin-top: 20px;
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-900 text-gray-100">
     <div class="container mx-auto p-4">
-        <!-- Header -->
         <header class="flex justify-between items-center py-4">
-            <h1 class="text-3xl font-bold">Inventory Management</h1>
+            <h1 class="text-3xl font-bold text-white">Non-Alcoholic Beer Inventory</h1>
             <div class="flex space-x-4">
-                <button id="scanButton" class="neon-button">
-                    <i class="fas fa-camera mr-2"></i> Start Scanning
+                <button id="scanButton" class="neon-button flex items-center btn-small">
+                    <i class="fas fa-camera mr-2"></i> Scan
                 </button>
-                <button id="downloadCSV" class="neon-button">
-                    <i class="fas fa-file-csv mr-2"></i> Download CSV
+                <button id="exportButton" class="neon-button flex items-center btn-small">
+                    <i class="fas fa-file-csv mr-2"></i> Export CSV
                 </button>
             </div>
         </header>
 
-        <!-- Camera Video Feed -->
-        <div class="relative">
-            <video id="video" autoplay></video>
-            <div class="focus-frame"></div>
-        </div>
+        <main>
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold mb-4 text-white">Add New Item</h2>
+                <form id="itemForm" class="glass p-4 rounded-md shadow-md">
+                    <div class="mb-4">
+                        <label for="itemName" class="block text-sm font-medium text-gray-300">Item Name</label>
+                        <input type="text" id="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter item name">
+                    </div>
+                    <div class="mb-4">
+                        <label for="quantity" class="block text-sm font-medium text-gray-300">Quantity</label>
+                        <input type="number" id="quantity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter quantity">
+                    </div>
+                    <div class="mb-4">
+                        <label for="barcode" class="block text-sm font-medium text-gray-300">Barcode/QR Code</label>
+                        <input type="text" id="barcode" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-800 text-white" placeholder="Enter barcode or QR code">
+                    </div>
+                    <button type="submit" class="neon-button">Add Item</button>
+                </form>
+            </section>
 
-        <!-- Product Information -->
-        <div class="product-info">
-            <h2 class="text-lg font-semibold">Product Information</h2>
-            <p id="productName">Name: <span id="productDetailsName">N/A</span></p>
-            <p id="productCategory">Category: <span id="productDetailsCategory">N/A</span></p>
-            <p id="productQuantity">Quantity: <span id="productDetailsQuantity">N/A</span></p>
-        </div>
+            <section>
+                <h2 class="text-2xl font-semibold mb-4 text-white">Inventory List</h2>
+                <ul id="inventoryList" class="glass p-4 rounded-md shadow-md">
+                    <!-- Inventory items will be dynamically added here -->
+                </ul>
+            </section>
+        </main>
+    </div>
 
-        <!-- Error Message -->
-        <div id="errorMessage" class="error-message">
-            Product not found for this barcode.
-            <button onclick="closeErrorMessage()">×</button>
-        </div>
-
-        <!-- Category Select -->
-        <div class="my-4">
-            <label for="category" class="block text-white text-lg mb-2">Filter by Category:</label>
-            <select id="category" class="category-select">
-                <option value="all">All Products</option>
-                <option value="beer">Non-Alcoholic Beer</option>
-                <option value="wine">Non-Alcoholic Wine</option>
-                <option value="cocktail">Non-Alcoholic Cocktails</option>
-            </select>
+    <!-- Modal for QR Code Scanner -->
+    <div id="qrCodeScannerModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white p-4 rounded-md shadow-md w-11/12 md:w-1/2 relative">
+            <video id="scanner" style="width: 100%; height: 300px;"></video>
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div class="w-1/2 h-1/2 border-4 border-red-500"></div>
+            </div>
+            <button id="closeScanner" class="mt-4 bg-red-500 text-white px-4 py-2 rounded-md">Close</button>
         </div>
     </div>
 
     <script>
-        // Sample Database of Non-Alcoholic Beers (with UPC codes)
-        const productDatabase = {
-            "012345678901": { name: "Heineken 0.0", category: "Non-Alcoholic Beer", quantity: 100 },
-            "023456789012": { name: "Budweiser Zero", category: "Non-Alcoholic Beer", quantity: 80 },
-            "034567890123": { name: "Beck's Blue", category: "Non-Alcoholic Beer", quantity: 75 },
-            "045678901234": { name: "Corona Cero", category: "Non-Alcoholic Beer", quantity: 60 },
-            "056789012345": { name: "Carlsberg 0.0", category: "Non-Alcoholic Beer", quantity: 50 },
-        };
+        let inventory = [];
+        const sampleProducts = [
+            { name: 'Heineken 0.0', barcode: '1234567890123' },
+            { name: 'Budweiser Zero', barcode: '2345678901234' },
+            { name: 'Corona Zero', barcode: '3456789012345' },
+            { name: 'Beck’s Blue', barcode: '4567890123456' }
+        ];
 
-        const codeReader = new ZXing.BrowserMultiFormatReader();
-        let isScanning = false;
-
-        // Start video and barcode scanning immediately on page load
-        window.onload = function() {
-            startScanning();
-        }
-
-        // Initialize video stream and start barcode scanning
-        function startScanning() {
-            isScanning = true;
-            codeReader.listVideoInputDevices()
-                .then((videoInputDevices) => {
-                    const firstDeviceId = videoInputDevices[0].deviceId;
-                    codeReader.decodeFromVideoDevice(firstDeviceId, 'video', (result, error) => {
-                        if (result && isScanning) {
-                            const barcode = result.text;
-                            handleBarcodeScan(barcode);
+        document.getElementById('scanButton').addEventListener('click', function() {
+            document.getElementById('qrCodeScannerModal').classList.remove('hidden');
+            const codeReader = new ZXing.BrowserBarcodeReader();
+            codeReader.decodeFromVideoDevice(null, 'scanner', (result, err) => {
+                if (result) {
+                    document.getElementById('barcode').value = result.text;
+                    const product = sampleProducts.find(p => p.barcode === result.text);
+                    if (product) {
+                        document.getElementById('itemName').value = product.name;
+                        if (navigator.vibrate) {
+                            navigator.vibrate(200); // Vibrate for 200ms on success
                         }
-                    });
-                })
-                .catch(err => console.error("Error initializing scanner:", err));
-        }
-
-        // Stop scanning
-        function stopScanning() {
-            isScanning = false;
-            codeReader.reset();
-        }
-
-        // Handle scanned barcode
-        function handleBarcodeScan(barcode) {
-            const product = productDatabase[barcode];
-            if (product) {
-                // Update UI with product details
-                document.getElementById('productDetailsName').textContent = product.name;
-                document.getElementById('productDetailsCategory').textContent = product.category;
-                document.getElementById('productDetailsQuantity').textContent = product.quantity;
-
-                // Add vibration feedback on successful scan (works on most mobile devices)
-                if (navigator.vibrate) {
-                    navigator.vibrate(200); // Vibrate for 200ms
+                    } else {
+                        alert('Product not found for this barcode.');
+                    }
+                    codeReader.reset();
+                    document.getElementById('qrCodeScannerModal').classList.add('hidden');
                 }
-
-                // Close any error message if a valid product is found
-                closeErrorMessage();
-            } else {
-                showErrorMessage();
-            }
-        }
-
-        // Show the error message
-        function showErrorMessage() {
-            document.getElementById("errorMessage").style.display = "block";
-        }
-
-        // Close the error message
-        function closeErrorMessage() {
-            document.getElementById("errorMessage").style.display = "none";
-        }
-
-        // Button to start scanning
-        document.getElementById("scanButton").addEventListener("click", function () {
-            if (!isScanning) {
-                startScanning();
-                this.textContent = "Stop Scanning";
-            } else {
-                stopScanning();
-                this.textContent = "Start Scanning";
-            }
+                if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error(err);
+                }
+            });
         });
 
-        // Download CSV functionality
-        document.getElementById("downloadCSV").addEventListener("click", function () {
-            const csvContent = "Product Name,Category,Quantity\n" + 
-                               Object.values(productDatabase).map(product => 
-                                   `${product.name},${product.category},${product.quantity}`).join("\n");
+        document.getElementById('closeScanner').addEventListener('click', function() {
+            const codeReader = new ZXing.BrowserBarcodeReader();
+            codeReader.reset();
+            document.getElementById('qrCodeScannerModal').classList.add('hidden');
+        });
 
-            const blob = new Blob([csvContent], { type: "text/csv" });
+        document.getElementById('itemForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            addItemToInventory();
+        });
+
+        function addItemToInventory() {
+            const itemName = document.getElementById('itemName').value;
+            const quantity = document.getElementById('quantity').value;
+            const barcode = document.getElementById('barcode').value;
+
+            inventory.push({ itemName, quantity, barcode });
+            document.getElementById('itemForm').reset();
+            renderInventory();
+        }
+
+        function renderInventory() {
+            const inventoryList = document.getElementById('inventoryList');
+            inventoryList.innerHTML = '';
+            inventory.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center py-2 border-b border-gray-200';
+                li.innerHTML = `
+                    <div>
+                        <h3 class="text-lg font-medium text-white">${item.itemName}</h3>
+                        <p class="text-sm text-gray-400">Quantity: ${item.quantity}</p>
+                        <p class="text-sm text-gray-400">Barcode: ${item.barcode}</p>
+                    </div>
+                `;
+                inventoryList.appendChild(li);
+            });
+        }
+
+        document.getElementById('exportButton').addEventListener('click', function() {
+            const csvContent = "data:text/csv;charset=utf-8," + inventory.map(item => 
+                `${item.itemName},${item.quantity},${item.barcode}`
+            ).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "inventory.csv";
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "inventory.csv");
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
         });
     </script>
 </body>
