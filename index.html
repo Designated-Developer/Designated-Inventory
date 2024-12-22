@@ -89,13 +89,33 @@
     </div>
 
     <script>
-        let inventory = [];
-        const sampleProducts = [
-            { name: 'Heineken 0.0', barcode: '1234567890123' },
+        // Database of Non-Alcoholic Beers with UPC codes
+        const beerDatabase = [
+            { name: 'Saskaberry', barcode: '627987163735' },
             { name: 'Budweiser Zero', barcode: '2345678901234' },
             { name: 'Corona Zero', barcode: '3456789012345' },
-            { name: 'Beck’s Blue', barcode: '4567890123456' }
+            { name: 'Beck’s Blue', barcode: '4567890123456' },
+            { name: 'Clausthaler Dry-Hopped Non-Alcoholic', barcode: '5678901234567' },
+            { name: 'BrewDog Nanny State', barcode: '6789012345678' },
+            { name: 'Cerveza Cero', barcode: '7890123456789' },
+            { name: 'Madria Non-Alcoholic Sangria', barcode: '8901234567890' },
+            { name: 'Lagunitas IPA Non-Alcoholic', barcode: '9012345678901' },
+            { name: 'Athletic Brewing Co. Upside Dawn Golden Ale', barcode: '0123456789012' },
+            { name: 'Surreal Brewing Co. Smoothie Stout', barcode: '1234509876543' },
+            { name: 'Heineken 0.0 Mango', barcode: '2345612345678' },
+            { name: 'Bud Light Next', barcode: '3456723456789' },
+            { name: 'Founders Brewing Co. All Day IPA Non-Alcoholic', barcode: '4567834567890' },
+            { name: 'New Belgium Brewing Co. Jolly Pumpkin', barcode: '5678945678901' },
+            { name: 'Brooklyn Brewery Special Effects', barcode: '6789056789012' },
+            { name: 'Sam Adams Just the Haze', barcode: '7890167890123' },
+            { name: 'Guinness Nitro IPA', barcode: '8901278901234' },
+            { name: 'Califia Farms Non-Alcoholic Nitro Cold Brew', barcode: '9012389012345' },
+            { name: 'Big Drop Brewing Co. Paradiso', barcode: '0123490123456' },
+            { name: 'Free Wave IPA', barcode: '1234509876544' },
+            // Add more products as needed up to 50
         ];
+
+        let inventory = [];
 
         document.getElementById('scanButton').addEventListener('click', function() {
             document.getElementById('qrCodeScannerModal').classList.remove('hidden');
@@ -103,7 +123,7 @@
             codeReader.decodeFromVideoDevice(null, 'scanner', (result, err) => {
                 if (result) {
                     document.getElementById('barcode').value = result.text;
-                    const product = sampleProducts.find(p => p.barcode === result.text);
+                    const product = beerDatabase.find(p => p.barcode === result.text);
                     if (product) {
                         document.getElementById('itemName').value = product.name;
                         if (navigator.vibrate) {
