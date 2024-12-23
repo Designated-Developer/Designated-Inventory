@@ -85,10 +85,34 @@
 
         function renderSelectedItems() {
             selectedItemsList.innerHTML = '';
-            selectedItemsByStore[currentStore].forEach(item => {
+            selectedItemsByStore[currentStore].forEach((item, index) => {
                 const li = document.createElement('li');
-                li.textContent = `${item.name}: ${item.quantity}`;
+                li.classList.add('flex', 'justify-between', 'items-center', 'mb-2');
+                li.innerHTML = `
+                    <span>${item.name}: ${item.quantity}</span>
+                    <div>
+                        <button class="edit-button bg-yellow-500 text-white px-2 py-1 rounded mr-2" data-index="${index}">Edit</button>
+                        <button class="delete-button bg-red-500 text-white px-2 py-1 rounded" data-index="${index}">Delete</button>
+                    </div>
+                `;
                 selectedItemsList.appendChild(li);
+
+                const editButton = li.querySelector('.edit-button');
+                editButton.addEventListener('click', () => {
+                    const newQuantity = prompt(`Edit quantity for ${item.name}:`, item.quantity);
+                    if (newQuantity && !isNaN(newQuantity)) {
+                        selectedItemsByStore[currentStore][index].quantity = parseInt(newQuantity, 10);
+                        renderSelectedItems();
+                    } else {
+                        alert('Please enter a valid number.');
+                    }
+                });
+
+                const deleteButton = li.querySelector('.delete-button');
+                deleteButton.addEventListener('click', () => {
+                    selectedItemsByStore[currentStore].splice(index, 1);
+                    renderSelectedItems();
+                });
             });
         }
 
