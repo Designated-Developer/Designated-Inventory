@@ -6,111 +6,120 @@
     <title>Inventory App</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-6">
+<body class="bg-gray-50 text-gray-800">
     <header class="text-center mb-6">
-        <h1 class="text-3xl font-bold">Inventory Management App</h1>
-        <p class="text-gray-600">Manage your inventory efficiently.</p>
+        <h1 class="text-4xl font-extrabold text-gray-900">Inventory Management</h1>
+        <p class="text-gray-500">Streamline your inventory process with ease.</p>
     </header>
 
-    <main>
-        <div class="mb-6">
-            <label for="location" class="block text-gray-700">Select Location</label>
-            <select id="location" class="block w-full p-2 border rounded">
+    <main class="max-w-4xl mx-auto">
+        <!-- Location Selector -->
+        <div class="mb-6 flex justify-between items-center">
+            <label for="location" class="text-lg font-medium">Select Store</label>
+            <select id="location" class="w-1/2 p-2 border rounded-lg shadow-sm">
                 <option value="Store 1">Store 1</option>
                 <option value="Store 2">Store 2</option>
             </select>
         </div>
 
-        <section id="beer-section" class="grid grid-cols-4 gap-4">
-            <!-- Beers will be dynamically rendered here -->
+        <!-- Beer List -->
+        <section class="grid grid-cols-3 gap-6">
+            <div class="beer-item bg-white p-4 border rounded-lg shadow-md hover:shadow-lg" data-name="Beer 1">
+                <img src="https://via.placeholder.com/100" alt="Beer 1" class="mx-auto mb-2">
+                <p class="font-semibold">Beer 1</p>
+                <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-blue-700">Add</button>
+            </div>
+            <div class="beer-item bg-white p-4 border rounded-lg shadow-md hover:shadow-lg" data-name="Beer 2">
+                <img src="https://via.placeholder.com/100" alt="Beer 2" class="mx-auto mb-2">
+                <p class="font-semibold">Beer 2</p>
+                <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-blue-700">Add</button>
+            </div>
+            <div class="beer-item bg-white p-4 border rounded-lg shadow-md hover:shadow-lg" data-name="Beer 3">
+                <img src="https://via.placeholder.com/100" alt="Beer 3" class="mx-auto mb-2">
+                <p class="font-semibold">Beer 3</p>
+                <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-blue-700">Add</button>
+            </div>
+            <div class="beer-item bg-white p-4 border rounded-lg shadow-md hover:shadow-lg" data-name="Beer 4">
+                <img src="https://via.placeholder.com/100" alt="Beer 4" class="mx-auto mb-2">
+                <p class="font-semibold">Beer 4</p>
+                <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-blue-700">Add</button>
+            </div>
+            <div class="beer-item bg-white p-4 border rounded-lg shadow-md hover:shadow-lg" data-name="Beer 5">
+                <img src="https://via.placeholder.com/100" alt="Beer 5" class="mx-auto mb-2">
+                <p class="font-semibold">Beer 5</p>
+                <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-blue-700">Add</button>
+            </div>
+            <div class="beer-item bg-white p-4 border rounded-lg shadow-md hover:shadow-lg" data-name="Beer 6">
+                <img src="https://via.placeholder.com/100" alt="Beer 6" class="mx-auto mb-2">
+                <p class="font-semibold">Beer 6</p>
+                <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-blue-700">Add</button>
+            </div>
         </section>
 
-        <section class="mt-6">
-            <h2 class="text-xl font-bold mb-2">Selected Items</h2>
-            <ul id="selected-items" class="bg-white p-4 border rounded"></ul>
-            <button id="export-button" class="bg-green-500 text-white px-3 py-1 rounded mt-2">Export to CSV</button>
-            <button id="email-button" class="bg-yellow-500 text-white px-3 py-1 rounded mt-2">Email CSV</button>
+        <!-- Selected Items -->
+        <section class="mt-10">
+            <h2 class="text-2xl font-bold mb-4">Selected Items</h2>
+            <ul id="selected-items" class="bg-white p-6 border rounded-lg shadow-md space-y-3"></ul>
+            <div class="mt-6 flex space-x-4">
+                <button id="export-button" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Export to CSV</button>
+                <button id="email-button" class="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600">Email CSV</button>
+            </div>
         </section>
     </main>
 
     <script>
-        const beersByStore = {
-            "Store 1": ["Beer 1", "Beer 2", "Beer 3", "Beer 4", "Beer 5", "Beer 6"],
-            "Store 2": ["Beer 7", "Beer 8", "Beer 9"]
-        };
-
-        let currentStore = "Store 1";
-        const selectedItemsByStore = {
-            "Store 1": [],
-            "Store 2": []
-        };
-
-        const locationDropdown = document.getElementById('location');
-        const beerSection = document.getElementById('beer-section');
+        const selectedItems = [];
         const selectedItemsList = document.getElementById('selected-items');
         const exportButton = document.getElementById('export-button');
         const emailButton = document.getElementById('email-button');
 
-        locationDropdown.addEventListener('change', (e) => {
-            currentStore = e.target.value;
-            renderBeerButtons();
-            renderSelectedItems();
+        document.querySelectorAll('.add-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const beerName = button.closest('.beer-item').getAttribute('data-name');
+                const quantity = prompt(`Enter quantity for ${beerName}:`);
+
+                if (quantity && !isNaN(quantity)) {
+                    selectedItems.push({ name: beerName, quantity: parseInt(quantity, 10) });
+                    renderSelectedItems();
+                } else {
+                    alert('Please enter a valid number.');
+                }
+            });
         });
 
-        function renderBeerButtons() {
-            beerSection.innerHTML = '';
-            beersByStore[currentStore].forEach(beer => {
-                const beerItem = document.createElement('div');
-                beerItem.classList.add('beer-item', 'bg-white', 'p-4', 'border', 'rounded', 'text-center');
-                beerItem.setAttribute('data-name', beer);
-                beerItem.innerHTML = `
-                    <img src="https://via.placeholder.com/100" alt="${beer}" class="mx-auto mb-2">
-                    <p>${beer}</p>
-                    <button class="add-button bg-blue-500 text-white px-3 py-1 rounded mt-2">Add</button>
+        function renderSelectedItems() {
+            selectedItemsList.innerHTML = '';
+            selectedItems.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = "flex justify-between items-center border-b py-2";
+                li.innerHTML = `
+                    <span>${item.name}: ${item.quantity}</span>
+                    <div>
+                        <button class="edit-button text-blue-600 mr-4" data-index="${index}">Edit</button>
+                        <button class="delete-button text-red-600" data-index="${index}">Delete</button>
+                    </div>
                 `;
-                beerSection.appendChild(beerItem);
+                selectedItemsList.appendChild(li);
+            });
 
-                const addButton = beerItem.querySelector('.add-button');
-                addButton.addEventListener('click', () => {
-                    const quantity = prompt(`Enter quantity for ${beer}:`);
-                    if (quantity && !isNaN(quantity)) {
-                        selectedItemsByStore[currentStore].push({ name: beer, quantity: parseInt(quantity, 10) });
+            document.querySelectorAll('.edit-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const index = button.getAttribute('data-index');
+                    const newQuantity = prompt(`Edit quantity for ${selectedItems[index].name}:`, selectedItems[index].quantity);
+
+                    if (newQuantity && !isNaN(newQuantity)) {
+                        selectedItems[index].quantity = parseInt(newQuantity, 10);
                         renderSelectedItems();
                     } else {
                         alert('Please enter a valid number.');
                     }
                 });
             });
-        }
 
-        function renderSelectedItems() {
-            selectedItemsList.innerHTML = '';
-            selectedItemsByStore[currentStore].forEach((item, index) => {
-                const li = document.createElement('li');
-                li.classList.add('flex', 'justify-between', 'items-center', 'mb-2');
-                li.innerHTML = `
-                    <span>${item.name}: ${item.quantity}</span>
-                    <div>
-                        <button class="edit-button bg-yellow-500 text-white px-2 py-1 rounded mr-2" data-index="${index}">Edit</button>
-                        <button class="delete-button bg-red-500 text-white px-2 py-1 rounded" data-index="${index}">Delete</button>
-                    </div>
-                `;
-                selectedItemsList.appendChild(li);
-
-                const editButton = li.querySelector('.edit-button');
-                editButton.addEventListener('click', () => {
-                    const newQuantity = prompt(`Edit quantity for ${item.name}:`, item.quantity);
-                    if (newQuantity && !isNaN(newQuantity)) {
-                        selectedItemsByStore[currentStore][index].quantity = parseInt(newQuantity, 10);
-                        renderSelectedItems();
-                    } else {
-                        alert('Please enter a valid number.');
-                    }
-                });
-
-                const deleteButton = li.querySelector('.delete-button');
-                deleteButton.addEventListener('click', () => {
-                    selectedItemsByStore[currentStore].splice(index, 1);
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const index = button.getAttribute('data-index');
+                    selectedItems.splice(index, 1);
                     renderSelectedItems();
                 });
             });
@@ -118,26 +127,22 @@
 
         exportButton.addEventListener('click', () => {
             const csvContent = "data:text/csv;charset=utf-8," +
-                selectedItemsByStore[currentStore].map(item => `${item.name},${item.quantity}`).join("\n");
+                selectedItems.map(item => `${item.name},${item.quantity}`).join("\n");
 
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement('a');
             link.setAttribute('href', encodedUri);
-            link.setAttribute('download', `${currentStore}_inventory.csv`);
+            link.setAttribute('download', 'inventory.csv');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         });
 
         emailButton.addEventListener('click', () => {
-            const csvContent = selectedItemsByStore[currentStore]
-                .map(item => `${item.name},${item.quantity}`).join("\n");
-            const mailtoLink = `mailto:?subject=${currentStore} Inventory Report&body=${encodeURIComponent(csvContent)}`;
+            const csvContent = selectedItems.map(item => `${item.name},${item.quantity}`).join("\n");
+            const mailtoLink = `mailto:?subject=Inventory Report&body=${encodeURIComponent(csvContent)}`;
             window.location.href = mailtoLink;
         });
-
-        // Initial render
-        renderBeerButtons();
     </script>
 </body>
 </html>
