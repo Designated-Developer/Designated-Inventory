@@ -81,8 +81,42 @@
         </div>
     </div>
 
+    <!-- Modal for Quantity Input -->
+    <div id="quantityModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white p-4 rounded-md shadow-md w-11/12 md:w-1/3 relative">
+            <h2 class="text-lg font-semibold mb-4">Enter Quantity</h2>
+            <input type="number" id="modalQuantity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 mb-4">
+            <div class="flex justify-end space-x-2">
+                <button id="saveQuantity" class="neon-button">Save</button>
+                <button id="closeQuantityModal" class="neon-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let inventory = [];
+        const beerDatabase = [
+            { name: "Heineken 0.0", upc: "1234567890123" },
+            { name: "Budweiser Zero", upc: "2345678901234" },
+            { name: "Clausthaler Original", upc: "3456789012345" },
+            { name: "Beck's Blue", upc: "4567890123456" },
+            { name: "Athletic Brewing Run Wild", upc: "5678901234567" },
+            { name: "Partake Pale", upc: "6789012345678" },
+            { name: "WellBeing Victory Wheat", upc: "7890123456789" },
+            { name: "Lagunitas IPNA", upc: "8901234567890" },
+            { name: "Brooklyn Special Effects", upc: "9012345678901" },
+            { name: "Suntory All-Free", upc: "0123456789012" },
+            { name: "Guinness 0.0", upc: "1123456789012" },
+            { name: "Stella Artois Liberte", upc: "1223456789012" },
+            { name: "Erdinger Weissbier Alkoholfrei", upc: "1323456789012" },
+            { name: "BrewDog Nanny State", upc: "1423456789012" },
+            { name: "Bravus Oatmeal Stout", upc: "1523456789012" },
+            { name: "Surreal Brewing 17 Mile", upc: "1623456789012" },
+            { name: "Coors Edge", upc: "1723456789012" },
+            { name: "Kaliber by Guinness", upc: "1823456789012" },
+            { name: "Estrella Free Damm", upc: "1923456789012" },
+            { name: "Big Drop Paradiso IPA", upc: "2023456789012" }
+        ];
 
         const scanButton = document.getElementById('scanButton');
         const closeScanner = document.getElementById('closeScanner');
@@ -90,6 +124,12 @@
         const barcodeInput = document.getElementById('barcode');
         const itemForm = document.getElementById('itemForm');
         const inventoryList = document.getElementById('inventoryList');
+        const quantityModal = document.getElementById('quantityModal');
+        const modalQuantity = document.getElementById('modalQuantity');
+        const saveQuantity = document.getElementById('saveQuantity');
+        const closeQuantityModal = document.getElementById('closeQuantityModal');
+
+        let editingItemIndex = null;
 
         scanButton.addEventListener('click', () => {
             qrCodeScannerModal.classList.remove('hidden');
@@ -98,6 +138,9 @@
             codeReader.decodeFromVideoDevice(null, 'scanner', (result, err) => {
                 if (result) {
                     barcodeInput.value = result.text;
+                    const foundBeer = beerDatabase.find(beer => beer.upc === result.text);
+                    if (foundBeer) document.getElementById('itemName').value = foundBeer.name;
+
                     if (navigator.vibrate) navigator.vibrate(200);
                     codeReader.reset();
                     qrCodeScannerModal.classList.add('hidden');
@@ -114,10 +157,16 @@
         itemForm.addEventListener('submit', event => {
             event.preventDefault();
             const itemName = document.getElementById('itemName').value;
-            const quantity = document.getElementById('quantity').value;
             const barcode = document.getElementById('barcode').value;
 
-            inventory.push({ itemName, quantity, barcode });
+            if (editingItemIndex !== null) {
+                inventory[editingItemIndex].itemName = itemName;
+                inventory[editingItemIndex].barcode = barcode;
+                inventory[editingItemIndex].quantity = modalQuantity.value;
+                editingItemIndex = null;
+            } else {
+                inventory.push({ itemName, quantity: modalQuantity.value, barcode });
+            }
             renderInventory();
             itemForm.reset();
         });
@@ -133,10 +182,40 @@
                         <p class="text-sm text-gray-400">Quantity: ${item.quantity}</p>
                         <p class="text-sm text-gray-400">Barcode: ${item.barcode}</p>
                     </div>
+                    <div class="flex space-x-2">
+                        <button class="neon-button" onclick="editItem(${index})">Edit</button>
+                        <button class="neon-button" onclick="deleteItem(${index})">Delete</button>
+                    </div>
                 `;
                 inventoryList.appendChild(li);
             });
         }
+
+        function editItem(index) {
+            const item = inventory[index];
+            document.getElementById('itemName').value = item.itemName;
+            document.getElementById('barcode').value = item.barcode;
+            modalQuantity.value = item.quantity;
+            editingItemIndex = index;
+            quantityModal.classList.remove('hidden');
+        }
+
+        function deleteItem(index) {
+            inventory.splice(index, 1);
+            renderInventory();
+        }
+
+        saveQuantity.addEventListener('click', () => {
+            if (editingItemIndex !== null) {
+                inventory[editingItemIndex].quantity = modalQuantity.value;
+                editingItemIndex = null;
+            }
+            quantityModal.classList.add('hidden');
+        });
+
+        closeQuantityModal.addEventListener('click', () => {
+            quantityModal.classList.add('hidden');
+        });
     </script>
 </body>
 </html>
