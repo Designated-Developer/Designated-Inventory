@@ -1,259 +1,95 @@
+<!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>
-   Inventory Management App
-  </title>
-  <script src="https://cdn.tailwindcss.com">
-  </script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
-  <style>
-   .modal {
-     display: none;
-     position: fixed;
-     z-index: 50;
-     left: 0;
-     top: 0;
-     width: 100%;
-     height: 100%;
-     overflow: auto;
-     background-color: rgba(0, 0, 0, 0.4);
-   }
-   .modal-content {
-     background-color: #fefefe;
-     margin: 15% auto;
-     padding: 20px;
-     border: 1px solid #888;
-     width: 80%;
-     max-width: 500px;
-     border-radius: 10px;
-   }
-  </style>
- </head>
- <body class="bg-gray-100 font-roboto">
-  <div class="container mx-auto p-4">
-   <header class="text-center mb-8">
-    <h1 class="text-4xl font-bold text-gray-800">
-     Inventory Management App
-    </h1>
-    <p class="text-gray-600">
-     Simplify your inventory process for non-alcoholic beverages
-    </p>
-   </header>
-   <section class="mb-8">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-     Select Location
-    </h2>
-    <div class="bg-white p-6 rounded-lg shadow-md">
-     <select class="block w-full p-2 border rounded-lg">
-      <option value="Toms Variety">
-       Toms Variety
-      </option>
-      <option value="Herms Sports">
-       Herms Sports
-      </option>
-      <option value="Kilworth HH">
-       Kilworth HH
-      </option>
-      <option value="St. Thomas HH">
-       St. Thomas HH
-      </option>
-     </select>
-    </div>
-   </section>
-   <section class="mb-8">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-     Interactive Fridge Layout
-    </h2>
-    <div class="bg-white p-6 rounded-lg shadow-md">
-     <img alt="A detailed layout of a retail cooler with various non-alcoholic beers" class="w-full h-auto mb-4" height="400" src="https://storage.googleapis.com/a1aa/image/N9ujfsU5ouxoXK8KMjJ5eEjYpkomXDQuqQoFfHRea1SPFm3PB.jpg" width="600"/>
-     <div class="grid grid-cols-5 gap-4">
-      <!-- Repeat for each beer hotspot -->
-      <div class="relative">
-       <img alt="Image of Beer 1, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 1')" src="https://storage.googleapis.com/a1aa/image/XfEEx62jL7SuYqkISvoUnOmFDdSQfaZxWLCnYyF5WL2as59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 2, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 2')" src="https://storage.googleapis.com/a1aa/image/VX5Bjmo0CU7eGCij1xtofGCuR1hZgqfa7EQTeg8YnBfHkNvfE.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 3, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 3')" src="https://storage.googleapis.com/a1aa/image/BkbbyJtWrx5ZA1RmolDbpk8bnPh67mt9xsVVCWgesRgT28eTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 4, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 4')" src="https://storage.googleapis.com/a1aa/image/7Crpo3RPj6alDZAxSQxfpLDB90G6lhehWUCe1G8UxjJUXz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 5, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 5')" src="https://storage.googleapis.com/a1aa/image/tPevpA3WsB1ZWqbGyHVofncdT0nOGEcubgtbGrNIefqJwm3PB.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 6, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 6')" src="https://storage.googleapis.com/a1aa/image/AVo8A7DQ4TpNKtDelKe7ol3wUXFnipvfrSsyMfnDjXgNym3PB.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 7, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 7')" src="https://storage.googleapis.com/a1aa/image/pJQB78ERiMICPdNqjZKAH0M3N1o75exZ1JxeyTVxhZ2ps59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 8, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 8')" src="https://storage.googleapis.com/a1aa/image/Q53ShPTVoh6cI5GPYxn6DhZ4sqb4puFzYaui3u7AUeOX28eTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 9, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 9')" src="https://storage.googleapis.com/a1aa/image/TvGiR02prJ7wNJofA7K7VwZYeC348C4E8Jh1AUl3hhMws59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 10, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 10')" src="https://storage.googleapis.com/a1aa/image/ZzfvPf5TJVj9ckfLj9uqWhs8pvKNNpdbry05zsWJw4whXz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 11, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 11')" src="https://storage.googleapis.com/a1aa/image/4BQNkQgdbIYeBqBEWQ8fDofLYeIIWUftefHsuP78DkbeWs59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 12, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 12')" src="https://storage.googleapis.com/a1aa/image/SQTBeVlf37qzwUH6Q8e9v3YVSfTbDA38xSVnPrjcVBTxum3PB.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 13, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 13')" src="https://storage.googleapis.com/a1aa/image/avfiI1YifplbikMtmeS6gwO5YI09ykTk7duR1zLqlNsKZz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 14, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 14')" src="https://storage.googleapis.com/a1aa/image/Ps5uWafUi8Ue6EA0NXlrkwbc8wzejAqi2YVC2Zol9hgMYz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 15, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 15')" src="https://storage.googleapis.com/a1aa/image/81HT1XAaz8J2I9QflpwNAwJf5W4KW9fkgBrN0fjllLxRxm3PB.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 16, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 16')" src="https://storage.googleapis.com/a1aa/image/I5iMhYJV6RYPARe5bg8UjLMbgLpScZez4sfr4fDAyL6Ovm3PB.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 17, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 17')" src="https://storage.googleapis.com/a1aa/image/TmtPOnQIZ4LeDClJzlOnAFShefBGebb3GbsYN6ibcX4ywm3PB.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 18, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 18')" src="https://storage.googleapis.com/a1aa/image/hCHsTHLnFg5yPdELWtGe66jNYNgxwFu007O4Cvx2BeRKs59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 19, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 19')" src="https://storage.googleapis.com/a1aa/image/79fnM1GLUETJSyGJvY7ctnTmijWgdDh88ZeftPq7dVn9Yz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 20, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 20')" src="https://storage.googleapis.com/a1aa/image/mBZkfFguHkxAJq2NdlQIb8nzFB34qbw9m43tbfXt7xU1r59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 21, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 21')" src="https://storage.googleapis.com/a1aa/image/lfAGEWRJdcWnJKphBUexwdaJX66qQcAgsR5eeaehuzLReaeeTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 22, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 22')" src="https://storage.googleapis.com/a1aa/image/hpV49BKTMULzK1n284h4Y1Fjkc0zN9SalPLeyHBCrEXO28eTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 23, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 23')" src="https://storage.googleapis.com/a1aa/image/CdUeaeV8tKgxpEtVyg2AKaFj6sycVVE9enjSkk5MpVCzXz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 24, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 24')" src="https://storage.googleapis.com/a1aa/image/e5Br0yhvPRwzHCo2suy5czP7N620JiFwU6a0mwzwyUM318eTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 25, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 25')" src="https://storage.googleapis.com/a1aa/image/FfdsNltGOO1FHKLuYRb4SqmAlBEdUivRv58QnWfyiYbNs59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 26, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 26')" src="https://storage.googleapis.com/a1aa/image/Qp3fYeAZqPmb0UVAhEjfL5XCisMUMSZK3qGBtQIifTKuym3PB.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 27, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 27')" src="https://storage.googleapis.com/a1aa/image/i6zFg65GgQ53B5mvJ2QhpbmsAMuf7jOGcDKYLfiBYLRYs59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 28, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 28')" src="https://storage.googleapis.com/a1aa/image/rPyPYcJiuvYNB98EtC2efet7CUWrzTdlmeUVaZ9Vyj0efaeeTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 29, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 29')" src="https://storage.googleapis.com/a1aa/image/Qxj2TmQfGHQ3WCF8U3bMQiGzcZafRZoVWTPzTwlZhXNPs59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 30, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 30')" src="https://storage.googleapis.com/a1aa/image/ZzsGDG2LZTY7AJgDYSJWUq3U6IU7QwcZPGieVDTLgcYC28eTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 31, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 31')" src="https://storage.googleapis.com/a1aa/image/JJZJy9hOP241Jpjn9UZtNbWeTQdRh1XNe0fu4on73Cx2Xz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 32, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 32')" src="https://storage.googleapis.com/a1aa/image/B7uQwNnfCEzhBak00z3AYx53voAVpd3N9g769ul24L0Q28eTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 33, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 33')" src="https://storage.googleapis.com/a1aa/image/6BnKEgM0RELZAhbyhCWZpNk8gn4JiJarWo8nH6u7xf6718eTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 34, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 34')" src="https://storage.googleapis.com/a1aa/image/PR0qn5777Fo7AdhfLrMCW6XuwNv8noVIetzTWGomnafZZz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 35, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 35')" src="https://storage.googleapis.com/a1aa/image/mLImVzockdppLRFfGbeHj6XMJ7oPsI9cvm3wrk4UfR46Xz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 36, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 36')" src="https://storage.googleapis.com/a1aa/image/ewoNKpYS0OzIOagQDhWUtrlBFc8eU1ddp8mugfABHQZjYz7nA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 37, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 37')" src="https://storage.googleapis.com/a1aa/image/dSx1gZwuymbULhM64RpkeOEjWwZ5FbfTMxnoQroSBpDIs59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 38, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 38')" src="https://storage.googleapis.com/a1aa/image/aMDCzXFKYroMMF1orfMSdMIqWvWuuu0p7CYZeOlvsX7Ts59TA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 39, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 39')" src="https://storage.googleapis.com/a1aa/image/N2hV1CsAqgqNPF1aHXbwf5oZHsN2tUlLZTAjrHBRwcDZ28eTA.jpg" width="100"/>
-      </div>
-      <div class="relative">
-       <img alt="Image of Beer 40, a specific non-alcoholic beer" class="w-full h-auto cursor-pointer" height="100" onclick="openModal('Beer 40')" src="https://storage.googleapis.com/a1aa/image/A9c7qGYt90biMhF6CacUTLCpqyCRNQOfpWGsbOnzxDBA28eTA.jpg" width="100"/>
-      </div>
-     </div>
-    </div>
-   </section>
-   <section class="mb-8">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-     Beer-Specific Stock Input
-    </h2>
-    <div class="bg-white p-6 rounded-lg shadow-md">
-     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Repeat for each beer -->
-      <div class="flex items-center justify-between p-4 border-b">
-       <div class="flex items-center">
-        <img alt="Image of a specific non-alcoholic beer" class="w-12 h-12 mr-4" height="50" src="https://storage.googleapis.com/a1aa/image/qR9dcSSNegXeJEvidq11MoVomxeiEKN9j6medAzCiPDSzm3PB.jpg" width="50"/>
-        <span class="text-gray-800 font-semibold">
-         Beer Name
-        </span>
-       </div>
-       <input class="w-20 p-2 border rounded-lg text-center" placeholder="Qty" type="number"/>
-      </div>
-      <!-- Repeat for each beer -->
-     </div>
-    </div>
-   </section>
-   <section class="mb-8">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-     CSV Report Generation
-    </h2>
-    <div class="bg-white p-6 rounded-lg shadow-md">
-     <button class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600">
-      Download CSV
-     </button>
-     <button class="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 ml-4">
-      Email CSV
-     </button>
-    </div>
-   </section>
-   <section class="mb-8">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-     Summary
-    </h2>
-    <div class="bg-white p-6 rounded-lg shadow-md" id="summarySection">
-     <p class="text-gray-600">
-      No items added yet.
-     </p>
-    </div>
-   </section>
-  </div>
-  <!-- Modal -->
-  <div class="modal" id="quantityModal">
-   <div class="modal-content">
-    <span class="close cursor-pointer float-right text-gray-600" onclick="closeModal()">
-     ×
-    </span>
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4" id="modalBeerName">
-     Beer Name
-    </h2>
-    <input class="w-full p-2 border rounded-lg text-center mb-4" id="quantityInput" placeholder="Enter Quantity" type="number"/>
-    <button class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 w-full" onclick="confirmQuantity()">
-     Confirm
-    </button>
-   </div>
-  </div>
-  <script>
-  </script>
- </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <header class="text-center mb-6">
+        <h1 class="text-3xl font-bold">Inventory Management App</h1>
+        <p class="text-gray-600">Manage your inventory efficiently.</p>
+    </header>
+
+    <main>
+        <div class="mb-6">
+            <label for="location" class="block text-gray-700">Select Location</label>
+            <select id="location" class="block w-full p-2 border rounded">
+                <option value="Store 1">Store 1</option>
+                <option value="Store 2">Store 2</option>
+            </select>
+        </div>
+
+        <section class="grid grid-cols-4 gap-4">
+            <div class="beer-item bg-white p-4 border rounded text-center" data-name="Beer 1">
+                <img src="https://via.placeholder.com/100" alt="Beer 1" class="mx-auto mb-2">
+                <p>Beer 1</p>
+                <button class="add-button bg-blue-500 text-white px-3 py-1 rounded mt-2">Add</button>
+            </div>
+            <div class="beer-item bg-white p-4 border rounded text-center" data-name="Beer 2">
+                <img src="https://via.placeholder.com/100" alt="Beer 2" class="mx-auto mb-2">
+                <p>Beer 2</p>
+                <button class="add-button bg-blue-500 text-white px-3 py-1 rounded mt-2">Add</button>
+            </div>
+            <!-- Add more beers here as needed -->
+        </section>
+
+        <section class="mt-6">
+            <h2 class="text-xl font-bold mb-2">Selected Items</h2>
+            <ul id="selected-items" class="bg-white p-4 border rounded"></ul>
+            <button id="export-button" class="bg-green-500 text-white px-3 py-1 rounded mt-2">Export to CSV</button>
+            <button id="email-button" class="bg-yellow-500 text-white px-3 py-1 rounded mt-2">Email CSV</button>
+        </section>
+    </main>
+
+    <script>
+        const selectedItems = [];
+        const selectedItemsList = document.getElementById('selected-items');
+        const exportButton = document.getElementById('export-button');
+        const emailButton = document.getElementById('email-button');
+
+        document.querySelectorAll('.add-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const beerName = button.closest('.beer-item').getAttribute('data-name');
+                const quantity = prompt(`Enter quantity for ${beerName}:`);
+
+                if (quantity && !isNaN(quantity)) {
+                    selectedItems.push({ name: beerName, quantity: parseInt(quantity, 10) });
+                    renderSelectedItems();
+                } else {
+                    alert('Please enter a valid number.');
+                }
+            });
+        });
+
+        function renderSelectedItems() {
+            selectedItemsList.innerHTML = '';
+            selectedItems.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name}: ${item.quantity}`;
+                selectedItemsList.appendChild(li);
+            });
+        }
+
+        exportButton.addEventListener('click', () => {
+            const csvContent = "data:text/csv;charset=utf-8," +
+                selectedItems.map(item => `${item.name},${item.quantity}`).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'inventory.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        emailButton.addEventListener('click', () => {
+            const csvContent = selectedItems.map(item => `${item.name},${item.quantity}`).join("\n");
+            const mailtoLink = `mailto:?subject=Inventory Report&body=${encodeURIComponent(csvContent)}`;
+            window.location.href = mailtoLink;
+        });
+    </script>
+</body>
 </html>
