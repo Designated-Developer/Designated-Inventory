@@ -1,238 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Non-Alcoholic Beer Inventory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'SF Pro', sans-serif;
-            background-color: #F7F8FA; /* Apple-like background */
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            padding: 20px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #333;
-        }
-        .button {
-            padding: 12px 24px;
-            background-color: #007AFF;
-            color: white;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 500;
-            text-align: center;
-            transition: background-color 0.3s ease;
-            cursor: pointer;
-            border: none;
-        }
-        .button:hover {
-            background-color: #005BB5;
-        }
-        .input {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: 12px;
-            border: 1px solid #D1D1D6;
-            font-size: 16px;
-            margin: 8px 0;
-            background-color: white;
-        }
-        .input:focus {
-            outline: none;
-            border-color: #007AFF;
-        }
-        .scanner-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .scanner-modal.active {
-            visibility: visible;
-            opacity: 1;
-        }
-        .scanner-container {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-            text-align: center;
-        }
-        .crosshair {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200px;
-            height: 200px;
-            border: 2px solid red;
-            transform: translate(-50%, -50%);
-        }
-        .crosshair:before, .crosshair:after {
-            content: '';
-            position: absolute;
-            background-color: red;
-        }
-        .crosshair:before {
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            transform: translateY(-50%);
-        }
-        .crosshair:after {
-            top: 0;
-            left: 50%;
-            height: 100%;
-            width: 2px;
-            transform: translateX(-50%);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Non-Alcoholic Beer Inventory</h1>
-            <div>
-                <button id="scanButton" class="button">Scan</button>
-                <button id="exportButton" class="button">Export CSV</button>
-            </div>
-        </header>
+import SwiftUI
+import CodeScanner
 
-        <main>
-            <form id="itemForm">
-                <input type="text" id="itemName" class="input" placeholder="Item Name">
-                <input type="number" id="quantity" class="input" placeholder="Quantity">
-                <input type="text" id="barcode" class="input" placeholder="Barcode">
-                <button type="submit" class="button">Add Item</button>
-            </form>
+struct ScannerAppView: View {
+    @State private var isShowingScanner = false
+    @State private var scannedCode: String?
+    @Environment(\.colorScheme) var colorScheme
 
-            <ul id="inventoryList">
-                <!-- Inventory items will appear here -->
-            </ul>
-        </main>
-    </div>
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                if let code = scannedCode {
+                    Text("Scanned Code:")
+                        .font(.headline)
+                    Text(code)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                } else {
+                    Text("No code scanned yet.")
+                        .foregroundColor(.secondary)
+                }
 
-    <!-- Modal for QR Code Scanner -->
-    <div id="qrCodeScannerModal" class="scanner-modal">
-        <div class="scanner-container">
-            <video id="scanner" style="width: 100%; height: 300px;"></video>
-            <div class="crosshair"></div>
-            <button id="closeScanner" class="button" style="margin-top: 16px;">Close</button>
-        </div>
-    </div>
+                Button(action: {
+                    isShowingScanner = true
+                }) {
+                    Label("Scan", systemImage: "barcode.viewfinder")
+                        .font(.title2)
+                        .padding()
+                        .background(Color.accentColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                        .hoverEffect(.highlight)
+                }
 
-    <script>
-        let inventory = [];
-
-        const codeReader = new ZXing.BrowserBarcodeReader();
-        let currentScanner = null;
-
-        document.getElementById('scanButton').addEventListener('click', function() {
-            // Open scanner modal
-            document.getElementById('qrCodeScannerModal').classList.add('active');
-            const videoElement = document.getElementById('scanner');
-            const constraints = { video: { facingMode: 'environment' } };
-
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then((stream) => {
-                    videoElement.srcObject = stream;
-                    currentScanner = codeReader.decodeFromVideoDevice(null, 'scanner', (result, err) => {
-                        if (result) {
-                            document.getElementById('barcode').value = result.text;
-                            const product = beerDatabase.find(p => p.barcode === result.text);
-                            if (product) {
-                                document.getElementById('itemName').value = product.name;
-                                if (navigator.vibrate) {
-                                    navigator.vibrate(200); // Vibrate on success
-                                }
-                            } else {
-                                alert('Product not found.');
-                            }
-                        }
-                        if (err && !(err instanceof ZXing.NotFoundException)) {
-                            console.error(err);
-                        }
-                    });
-                })
-                .catch((err) => {
-                    console.error('Error accessing camera: ', err);
-                });
-        });
-
-        document.getElementById('closeScanner').addEventListener('click', function() {
-            if (currentScanner) {
-                currentScanner.reset();
+                Spacer()
             }
-            document.getElementById('qrCodeScannerModal').classList.remove('active');
-        });
+            .padding()
+            .background(colorScheme == .dark ? Color.black : Color.white)
+            .navigationBarTitle("Barcode Scanner", displayMode: .inline)
+            .sheet(isPresented: $isShowingScanner) {
+                CodeScannerView(
+                    codeTypes: [.ean13, .ean8, .qr],
+                    simulatedData: "1234567890",
+                    completion: handleScan
+                )
+                .overlay(
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.accentColor, lineWidth: 2)
+                            .frame(width: 250, height: 150)
+                            .opacity(0.8)
+                            .animation(Animation.easeInOut(duration: 1).repeatForever())
 
-        document.getElementById('itemForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            addItemToInventory();
-        });
-
-        function addItemToInventory() {
-            const itemName = document.getElementById('itemName').value;
-            const quantity = document.getElementById('quantity').value;
-            const barcode = document.getElementById('barcode').value;
-
-            inventory.push({ itemName, quantity, barcode });
-            document.getElementById('itemForm').reset();
-            renderInventory();
+                        VStack {
+                            Text("Align the barcode within the frame")
+                                .font(.caption)
+                                .foregroundColor(.white)
+                                .padding(.top, 160)
+                        }
+                    }
+                )
+            }
         }
+    }
 
-        function renderInventory() {
-            const inventoryList = document.getElementById('inventoryList');
-            inventoryList.innerHTML = '';
-            inventory.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = `${item.itemName} - Quantity: ${item.quantity} - Barcode: ${item.barcode}`;
-                inventoryList.appendChild(li);
-            });
+    private func handleScan(result: Result<String, CodeScannerView.ScanError>) {
+        isShowingScanner = false
+
+        switch result {
+        case .success(let code):
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0)) {
+                scannedCode = code
+            }
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        case .failure:
+            scannedCode = nil
         }
+    }
+}
 
-        document.getElementById('exportButton').addEventListener('click', function() {
-            const csvContent = "data:text/csv;charset=utf-8," + inventory.map(item => 
-                `${item.itemName},${item.quantity},${item.barcode}`
-            ).join("\n");
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "inventory.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-    </script>
-</body>
-</html>
+@main
+struct ScannerApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ScannerAppView()
+        }
+    }
+}
