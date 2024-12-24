@@ -73,22 +73,7 @@
             </div>
             <div id="notes-section" class="mt-4 space-y-6">
                 <h3 class="text-xl font-semibold mb-2">Notes for Each Store</h3>
-                <div id="Tom's Variety-notes">
-                    <h4 class="text-lg font-semibold">Tom's Variety</h4>
-                    <textarea class="w-full p-3 border rounded-lg shadow-sm" id="Tom's Variety-note" placeholder="Add notes for Tom's Variety..."></textarea>
-                </div>
-                <div id="Herms Sports-notes">
-                    <h4 class="text-lg font-semibold">Herms Sports</h4>
-                    <textarea class="w-full p-3 border rounded-lg shadow-sm" id="Herms Sports-note" placeholder="Add notes for Herms Sports..."></textarea>
-                </div>
-                <div id="Kilworth HH-notes">
-                    <h4 class="text-lg font-semibold">Kilworth HH</h4>
-                    <textarea class="w-full p-3 border rounded-lg shadow-sm" id="Kilworth HH-note" placeholder="Add notes for Kilworth HH..."></textarea>
-                </div>
-                <div id="St. Thomas HH-notes">
-                    <h4 class="text-lg font-semibold">St. Thomas HH</h4>
-                    <textarea class="w-full p-3 border rounded-lg shadow-sm" id="St. Thomas HH-note" placeholder="Add notes for St. Thomas HH..."></textarea>
-                </div>
+                <textarea id="store-note" class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for this store..."></textarea>
             </div>
             <div class="mt-6 flex gap-4">
                 <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export PDF</button>
@@ -99,77 +84,152 @@
 
     <script>
         const stores = {
+            "Tom's Variety": [
+                { name: "BSA (Non-Alcoholic) Blonde Pilsner", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sour.png?v=1672425148" },
+                { name: "BSA (Non-Alcoholic) Raspberry Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_4.png?v=1674777834" }
+            ],
+            "Herms Sports": [
+                { name: "Blood Brothers Brewing (Non-Alcoholic) Blood Zero", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/jelly.png?v=1676166226" }
+            ],
+            "Kilworth HH": [
+                { name: "Atypique (Non-Alcoholic) Gin & Tonic", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/sparkly_6.png?v=1683676464" }
+            ],
+            "St. Thomas HH": [
+                { name: "Above (Non Alcoholic) Mojito", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/rc.png?v=1691782167" }
+            ]
+        };
+
+        const selectedItems = {
             "Tom's Variety": [],
             "Herms Sports": [],
             "Kilworth HH": [],
             "St. Thomas HH": []
         };
 
-        const storeNotes = {
-            "Tom's Variety": "",
-            "Herms Sports": "",
-            "Kilworth HH": "",
-            "St. Thomas HH": ""
-        };
-
         const storeSelect = document.getElementById('store');
+        const beerList = document.getElementById('beer-list');
         const deliverySections = document.getElementById('delivery-sections');
+        const notesTextarea = document.getElementById('store-note');
+
+        function renderBeerList(store) {
+            beerList.innerHTML = '';
+            stores[store].forEach(beer => {
+                const beerItem = document.createElement('div');
+                beerItem.className = "beer-item p-4 border rounded-lg shadow-md hover:shadow-lg";
+                beerItem.innerHTML = `
+                    <img src="${beer.image}" alt="${beer.name}" class="w-full h-32 object-cover rounded-md mb-3">
+                    <p class="font-semibold text-center">${beer.name}</p>
+                    <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 w-full hover:bg-blue-700" data-name="${beer.name}">Add</button>
+                `;
+                beerList.appendChild(beerItem);
+            });
+
+            document.querySelectorAll('.add-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const beerName = button.getAttribute('data-name');
+                    const quantity = prompt(`Enter quantity for ${beerName}:`);
+
+                    if (quantity && !isNaN(quantity)) {
+                        selectedItems[store].push({ name: beerName, quantity: parseInt(quantity, 10) });
+                        renderDeliverySections();
+                    } else {
+                        alert('Please enter a valid number.');
+                    }
+                });
+            });
+        }
+
+        function renderDeliverySections() {
+            const currentStore = storeSelect.value;
+            const items = selectedItems[currentStore];
+            deliverySections.innerHTML = '';
+
+            if (items.length > 0) {
+                const ul = document.createElement('ul');
+                ul.className = "bg-gray-100 p-4 rounded-lg shadow space-y-3";
+                items.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.className = "flex justify-between items-center py-2";
+                    li.innerHTML = `
+                        <span>${item.name}: ${item.quantity}</span>
+                        <div>
+                            <button class="edit-button text-blue-600 mr-4" data-index="${index}">Edit</button>
+                            <button class="delete-button text-red-600" data-index="${index}">Delete</button>
+                        </div>
+                    `;
+                    ul.appendChild(li);
+                });
+                deliverySections.appendChild(ul);
+
+                document.querySelectorAll('.edit-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        const newQuantity = prompt(`Edit quantity for ${items[index].name}:`, items[index].quantity);
+                        if (newQuantity && !isNaN(newQuantity)) {
+                            items[index].quantity = parseInt(newQuantity, 10);
+                            renderDeliverySections();
+                        } else {
+                            alert('Please enter a valid number.');
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.delete-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        items.splice(index, 1);
+                        renderDeliverySections();
+                    });
+                });
+            }
+        }
 
         function exportPDF() {
             const currentStore = storeSelect.value;
             const doc = new jspdf.jsPDF();
-
             doc.setFontSize(16);
-            doc.text(`${currentStore} - Delivery Report`, 10, 10);
+            doc.text(`Delivery Report for ${currentStore}`, 10, 10);
 
-            let yPosition = 20;
-            stores[currentStore].forEach(item => {
-                doc.text(`${item.name}: ${item.quantity || 0}`, 10, yPosition);
-                yPosition += 10;
+            let y = 20;
+            selectedItems[currentStore].forEach(item => {
+                doc.text(`${item.name}: ${item.quantity}`, 10, y);
+                y += 10;
             });
 
-            doc.text(`Notes: ${storeNotes[currentStore]}`, 10, yPosition + 10);
-
-            doc.save(`${currentStore}_Delivery_Report.pdf`);
+            doc.text(`Notes: ${notesTextarea.value}`, 10, y + 10);
+            doc.save(`${currentStore}-Delivery.pdf`);
         }
 
         function emailPDF() {
             const currentStore = storeSelect.value;
             const doc = new jspdf.jsPDF();
-
             doc.setFontSize(16);
-            doc.text(`${currentStore} - Delivery Report`, 10, 10);
+            doc.text(`Delivery Report for ${currentStore}`, 10, 10);
 
-            let yPosition = 20;
-            stores[currentStore].forEach(item => {
-                doc.text(`${item.name}: ${item.quantity || 0}`, 10, yPosition);
-                yPosition += 10;
+            let y = 20;
+            selectedItems[currentStore].forEach(item => {
+                doc.text(`${item.name}: ${item.quantity}`, 10, y);
+                y += 10;
             });
 
-            doc.text(`Notes: ${storeNotes[currentStore]}`, 10, yPosition + 10);
+            doc.text(`Notes: ${notesTextarea.value}`, 10, y + 10);
 
-            const pdfOutput = doc.output('dataurlstring');
-
-            const mailtoLink = `mailto:?subject=${encodeURIComponent(currentStore + " Delivery Report")}&body=Please find attached the delivery report.&attachment=${pdfOutput}`;
-
-            window.location.href = mailtoLink;
+            const pdfData = doc.output('datauristring');
+            const link = document.createElement('a');
+            link.href = `mailto:?subject=Delivery Report for ${currentStore}&body=Attached is the delivery report.&attachment=${pdfData}`;
+            link.click();
         }
 
         document.getElementById('export-button').addEventListener('click', exportPDF);
         document.getElementById('email-button').addEventListener('click', emailPDF);
 
         storeSelect.addEventListener('change', () => {
-            document.querySelectorAll('textarea').forEach(textarea => {
-                textarea.value = storeNotes[textarea.id.split('-note')[0]] || '';
-            });
+            renderBeerList(storeSelect.value);
+            notesTextarea.value = '';
+            renderDeliverySections();
         });
 
-        document.querySelectorAll('textarea').forEach(textarea => {
-            textarea.addEventListener('input', (e) => {
-                const store = e.target.id.split('-note')[0];
-                storeNotes[store] = e.target.value;
-            });
-        });
+        renderBeerList(storeSelect.value);
     </script>
 </body>
 </html>
