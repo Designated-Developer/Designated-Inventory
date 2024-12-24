@@ -45,30 +45,32 @@
     <script>
         const stores = {
             "Tom's Variety": [
-                "Amber Brew", "Citrus Spritz", "Hoppy Lager", "Golden Ale", "Crisp Wheat", "Smooth Stout", "Dark Roast Ale", "Honey Blonde Ale",
-                "Berry Delight", "Tropical IPA", "Malt Classic", "Fruity Radler", "Pale Ale", "Winter Spice", "Lime Lager", "Peach Wheat",
-                "Cherry Red Ale", "Classic Porter", "Summer Blonde", "Coconut Ale", "Double IPA", "Caramel Cream", "Vanilla Brew", "Pineapple Pale Ale",
-                "Mango Twist", "Grapefruit Lager", "Chocolate Ale", "Roasted Brown", "Cider Ale", "Nutty Lager", "Amber Spice", "Berry Fusion",
-                "Honey Apple", "Apple Lager", "Smooth Cream Ale", "Rich Porter", "Bold Wheat", "Wild Berry Lager", "Dark Honey Ale"
+                { name: "BSA (Non-Alcoholic) Blonde Pilsner", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sour.png?v=1672425148" },
+                { name: "BSA (Non-Alcoholic) Raspberry Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_4.png?v=1674777834" },
+                { name: "BSA (Non-Alcoholic) Lime Lemon Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_2.png?v=1674777334" },
+                { name: "BSA (Non-Alcoholic) Orange White", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_3.png?v=1674777651" },
+                { name: "Bellwoods Brewery (Non-Alcoholic) Jelly King Dry Hopped Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_9.png?v=1676070298" }
             ],
             "Herms Sports": [
-                "Hazy IPA", "Crisp Lager", "Light Radler", "Black Currant Ale", "Lemon Wheat", "Maple Brew", "Tart Cherry", "Bourbon Ale",
-                "Ginger Beer", "Vanilla Lager", "Orange Wheat", "Cinnamon Stout", "Berry Cider", "Tropical Blonde", "Mint Ale", "Classic Amber",
-                "Herbal Lager", "Peach Ale", "Golden IPA", "Dark Amber", "Rich Lager", "Smooth Porter", "Ginger Snap", "Maple Cream",
-                "Spicy Stout", "Mild Ale", "Velvet Stout", "Sweet Honey Ale", "Sour Raspberry", "Lemon Cream", "Zesty Lager", "Pine Lager",
-                "Tart Lime Ale", "Orange Pale Ale", "Brewed Cocoa", "Bold Malt", "Hoppy Wheat", "Crisp Cider", "Vanilla Ale"
+                { name: "Blood Brothers Brewing (Non-Alcoholic) Blood Zero", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/jelly.png?v=1676166226" },
+                { name: "Bellwoods Brewery (Non-Alcoholic) Sparkly Water With Hops & Grapefruit", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_2_4d3fd692-e39e-460b-825b-ca0336206438.png?v=1716930879" },
+                { name: "Bellwoods Brewery (Non-Alcoholic) Sparkly Water Mojito", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sparkly.png?v=1680026660" },
+                { name: "Bellwoods Brewery (Non-Alcoholic) Jelly King Dry Hopped Sour With Raspberry & Blackberry", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sparkly_1.png?v=1681297584" },
+                { name: "Athletic Brewing Company (Non-Alcoholic) Cerveza Athelica", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/sparkly_2.png?v=1683139715" }
             ],
             "Kilworth HH": [
-                "Frosty Pale Ale", "Lush Stout", "Amber Radler", "Hazy Cream Ale", "Sour Cherry Lager", "Crisp Blonde", "Mango Cream", "Dark Roast",
-                "Spiced Ale", "Rich IPA", "Berry Wheat", "Golden Brew", "Smooth Stout", "Caramel Lager", "Coconut Ale", "Honey Radler",
-                "Hoppy Amber", "Crisp Porter", "Velvet Wheat", "Tropical IPA", "Grapefruit Ale", "Winter Wheat", "Berry Brew", "Light Lager",
-                "Maple Amber", "Mint Stout", "Bold IPA", "Cream Lager"
+                { name: "Atypique (Non-Alcoholic) Gin & Tonic", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/sparkly_6.png?v=1683676464" },
+                { name: "Atypique (Non-Alcoholic) Amaretto Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/whiskey_1.png?v=1730131119" },
+                { name: "Atypique (Non-Alcoholic) Spiced Rum and Cola", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/paleale_1.png?v=1687535055" },
+                { name: "Atypique (Non-Alcoholic) Spritz", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/ginandt.png?v=1691780885" },
+                { name: "Above (Non-Alcoholic) Gin and Tonic", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/am_1.png?v=1691783130" }
             ],
             "St. Thomas HH": [
-                "Sweet Stout", "Rich Pale Ale", "Crisp Ale", "Lemon Lager", "Bold Cream Ale", "Vanilla Stout", "Orange Brew", "Berry Cream",
-                "Tart IPA", "Spicy Wheat", "Fruity Lager", "Tropical Stout", "Coconut Porter", "Maple Wheat", "Herbal Ale", "Golden Cider",
-                "Amber IPA", "Hoppy Radler", "Caramel Cream Ale", "Velvet Cider", "Mint Lager", "Zesty Amber", "Smooth Malt", "Wild Berry Stout",
-                "Sour Ale", "Dark Lager", "Chocolate Stout", "Honey Porter"
+                { name: "Above (Non Alcoholic) Mojito", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/rc.png?v=1691782167" },
+                { name: "Above (Non-Alcoholic) Whiskey Cola", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/spritz.png?v=1691782849" },
+                { name: "Bellwoods Brewery (Non-Alcoholic) Jelly King Dry Hopped Sour with Mango, Tangerine and Lime", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/gin.png?v=1691885076" },
+                { name: "Blood Brothers Brewing (Non-Alcoholic) Sour Up Ale", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/mojito_3_aee2c4da-6b29-4370-bd19-7e9bec028d37.png?v=1730130940" },
+                { name: "Bluff (Non-Alcoholic) Margarita", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/mojito_2.png?v=1691885184" }
             ]
         };
 
@@ -89,9 +91,9 @@
                 const beerItem = document.createElement('div');
                 beerItem.className = "beer-item bg-white p-4 border rounded-lg shadow-md hover:shadow-lg";
                 beerItem.innerHTML = `
-                    <img src="https://via.placeholder.com/100" alt="${beer}" class="mx-auto mb-2">
-                    <p class="font-semibold">${beer}</p>
-                    <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-blue-700" data-name="${beer}">Add</button>
+                    <img src="${beer.image}" alt="${beer.name}" class="mx-auto mb-2">
+                    <p class="font-semibold">${beer.name}</p>
+                    <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-blue-700" data-name="${beer.name}">Add</button>
                 `;
                 beerList.appendChild(beerItem);
             });
@@ -166,13 +168,12 @@
         });
 
         renderBeerList(storeSelect.value);
-        renderDeliverySections();
 
         document.getElementById('export-button').addEventListener('click', () => {
             const csvContent = "data:text/csv;charset=utf-8," +
                 Object.entries(selectedItems).map(([store, items]) => {
-                    return items.map(item => `${store},${item.name},${item.quantity}`).join("\n");
-                }).join("\n");
+                    return items.map(item => `${store},${item.name},${item.quantity}`).join("\\n");
+                }).join("\\n");
 
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement('a');
@@ -185,8 +186,8 @@
 
         document.getElementById('email-button').addEventListener('click', () => {
             const csvContent = Object.entries(selectedItems).map(([store, items]) => {
-                return items.map(item => `${store},${item.name},${item.quantity}`).join("\n");
-            }).join("\n");
+                return items.map(item => `${store},${item.name},${item.quantity}`).join("\\n");
+            }).join("\\n");
 
             const mailtoLink = `mailto:?subject=Inventory Report&body=${encodeURIComponent(csvContent)}`;
             window.location.href = mailtoLink;
@@ -194,3 +195,10 @@
     </script>
 </body>
 </html>
+"""
+
+# Save the code to a file
+with open(file_path, "w") as file:
+    file.write(html_code)
+
+file_path
