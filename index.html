@@ -78,7 +78,7 @@
             text-align: center;
         }
 
-        /* New popup styling */
+        /* Updated popup styling */
         .quantity-popup-container {
             background: rgba(0, 0, 0, 0.6);
             position: fixed;
@@ -94,11 +94,10 @@
         .quantity-popup {
             background: white;
             padding: 2rem;
-            border-radius: 10px;
+            border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            width: 300px;
+            width: 320px;
             text-align: center;
-            transform: scale(0);
             animation: popupShow 0.3s forwards;
         }
 
@@ -112,8 +111,40 @@
             }
         }
 
-        .beer-item .add-button {
+        /* Style for the buttons */
+        .quantity-button {
+            font-size: 2rem;
+            padding: 10px;
             background-color: #008CBA;
+            color: white;
+            border-radius: 10px;
+            width: 70px;
+            height: 70px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .quantity-button:disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+        }
+
+        .confirm-btn,
+        .cancel-btn {
+            font-size: 1.2rem;
+            padding: 1rem;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .confirm-btn {
+            background-color: #4CAF50;
+            color: white;
         }
     </style>
 </head>
@@ -231,14 +262,14 @@
                     quantityWindow.innerHTML = `
                         <div class="quantity-popup">
                             <h2 class="text-xl font-semibold mb-4">Enter Quantity for ${beerName}</h2>
-                            <div class="quantity-popup flex items-center justify-between mb-4">
-                                <button class="decrease bg-red-500 text-white rounded-lg p-2">-</button>
+                            <div class="quantity-controls mb-4 flex justify-between">
+                                <button class="quantity-button decrease">-</button>
                                 <input type="number" value="1" class="w-20 text-center border rounded-lg" data-beer="${beerName}">
-                                <button class="increase bg-green-500 text-white rounded-lg p-2">+</button>
+                                <button class="quantity-button increase">+</button>
                             </div>
                             <div class="action-buttons flex gap-4">
-                                <button class="bg-gray-500 text-white rounded-lg cancel">Cancel</button>
-                                <button class="bg-blue-500 text-white rounded-lg confirm">Confirm</button>
+                                <button class="cancel-btn">Cancel</button>
+                                <button class="confirm-btn">Confirm</button>
                             </div>
                         </div>
                     `;
@@ -254,11 +285,11 @@
                         input.value = parseInt(input.value) + 1;
                     });
 
-                    quantityWindow.querySelector('.cancel').addEventListener('click', () => {
+                    quantityWindow.querySelector('.cancel-btn').addEventListener('click', () => {
                         quantityWindow.remove();
                     });
 
-                    quantityWindow.querySelector('.confirm').addEventListener('click', () => {
+                    quantityWindow.querySelector('.confirm-btn').addEventListener('click', () => {
                         const quantity = quantityWindow.querySelector('input').value;
                         selectedItems[store].push({ name: beerName, quantity });
                         quantityWindow.remove();
