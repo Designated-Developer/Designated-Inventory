@@ -5,18 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory App</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        header {
+            background: linear-gradient(to right, #4ade80, #16a34a);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        main {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #beer-list .beer-item {
+            background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
+            transition: transform 0.2s ease-in-out;
+        }
+        #beer-list .beer-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        button {
+            transition: background-color 0.2s ease-in-out;
+        }
+        button:hover {
+            background-color: #059669;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
-    <header class="text-center mb-6">
-        <h1 class="text-4xl font-extrabold text-gray-900">Inventory Management</h1>
-        <p class="text-gray-500">Streamline your inventory process with ease.</p>
+<body class="bg-gray-50">
+    <header class="text-center">
+        <h1 class="text-4xl font-extrabold">Inventory Management</h1>
+        <p>Streamline your inventory process with ease.</p>
     </header>
 
-    <main class="max-w-4xl mx-auto">
-        <!-- Store Selector -->
-        <div class="mb-6 flex justify-between items-center">
-            <label for="store" class="text-lg font-medium">Select Store</label>
-            <select id="store" class="w-1/2 p-2 border rounded-lg shadow-sm">
+    <main class="max-w-5xl mx-auto mt-6">
+        <div class="mb-6">
+            <label for="store" class="text-lg font-medium block mb-2">Select Store</label>
+            <select id="store" class="w-full p-3 border rounded-lg shadow-sm">
                 <option value="Tom's Variety">Tom's Variety</option>
                 <option value="Herms Sports">Herms Sports</option>
                 <option value="Kilworth HH">Kilworth HH</option>
@@ -24,24 +54,35 @@
             </select>
         </div>
 
-        <!-- Beer List -->
-        <section id="beer-list" class="grid grid-cols-3 gap-6">
-            <!-- Beer items will be dynamically populated here -->
+        <section id="beer-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         </section>
 
-        <!-- Deliver To Section -->
-        <section class="mt-10">
+        <section>
             <h2 class="text-2xl font-bold mb-4">Deliver to</h2>
-            <div id="delivery-sections">
-                <!-- Dynamic delivery sections for each store -->
+            <div id="delivery-sections" class="space-y-4">
             </div>
-            <div class="mt-4">
-                <h3 class="text-xl font-semibold">Notes</h3>
-                <textarea id="store-notes" class="w-full p-3 border rounded-lg shadow-sm mt-2" placeholder="Add any notes for this store..."></textarea>
+            <div id="notes-section" class="mt-4 space-y-6">
+                <h3 class="text-xl font-semibold mb-2">Notes for Each Store</h3>
+                <div id="Tom's Variety-notes" class="hidden">
+                    <h4 class="text-lg font-semibold">Tom's Variety</h4>
+                    <textarea class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for Tom's Variety..."></textarea>
+                </div>
+                <div id="Herms Sports-notes" class="hidden">
+                    <h4 class="text-lg font-semibold">Herms Sports</h4>
+                    <textarea class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for Herms Sports..."></textarea>
+                </div>
+                <div id="Kilworth HH-notes" class="hidden">
+                    <h4 class="text-lg font-semibold">Kilworth HH</h4>
+                    <textarea class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for Kilworth HH..."></textarea>
+                </div>
+                <div id="St. Thomas HH-notes" class="hidden">
+                    <h4 class="text-lg font-semibold">St. Thomas HH</h4>
+                    <textarea class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for St. Thomas HH..."></textarea>
+                </div>
             </div>
-            <div class="mt-6 flex space-x-4">
-                <button id="export-button" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Export to CSV</button>
-                <button id="email-button" class="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600">Email CSV</button>
+            <div class="mt-6 flex gap-4">
+                <button id="export-button" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700">Export to CSV</button>
+                <button id="email-button" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600">Email CSV</button>
             </div>
         </section>
     </main>
@@ -50,31 +91,19 @@
         const stores = {
             "Tom's Variety": [
                 { name: "BSA (Non-Alcoholic) Blonde Pilsner", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sour.png?v=1672425148" },
-                { name: "BSA (Non-Alcoholic) Raspberry Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_4.png?v=1674777834" },
-                { name: "BSA (Non-Alcoholic) Lime Lemon Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_2.png?v=1674777334" },
-                { name: "BSA (Non-Alcoholic) Orange White", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_3.png?v=1674777651" },
-                { name: "Bellwoods Brewery (Non-Alcoholic) Jelly King Dry Hopped Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_9.png?v=1676070298" }
+                { name: "BSA (Non-Alcoholic) Raspberry Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_4.png?v=1674777834" }
             ],
             "Herms Sports": [
                 { name: "Blood Brothers Brewing (Non-Alcoholic) Blood Zero", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/jelly.png?v=1676166226" },
-                { name: "Bellwoods Brewery (Non-Alcoholic) Sparkly Water With Hops & Grapefruit", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_2_4d3fd692-e39e-460b-825b-ca0336206438.png?v=1716930879" },
-                { name: "Bellwoods Brewery (Non-Alcoholic) Sparkly Water Mojito", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sparkly.png?v=1680026660" },
-                { name: "Bellwoods Brewery (Non-Alcoholic) Jelly King Dry Hopped Sour With Raspberry & Blackberry", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sparkly_1.png?v=1681297584" },
-                { name: "Athletic Brewing Company (Non-Alcoholic) Cerveza Athelica", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/sparkly_2.png?v=1683139715" }
+                { name: "Bellwoods Brewery (Non-Alcoholic) Sparkly Water With Hops & Grapefruit", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_2_4d3fd692-e39e-460b-825b-ca0336206438.png?v=1716930879" }
             ],
             "Kilworth HH": [
                 { name: "Atypique (Non-Alcoholic) Gin & Tonic", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/sparkly_6.png?v=1683676464" },
-                { name: "Atypique (Non-Alcoholic) Amaretto Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/whiskey_1.png?v=1730131119" },
-                { name: "Atypique (Non-Alcoholic) Spiced Rum and Cola", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/paleale_1.png?v=1687535055" },
-                { name: "Atypique (Non-Alcoholic) Spritz", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/ginandt.png?v=1691780885" },
-                { name: "Above (Non-Alcoholic) Gin and Tonic", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/am_1.png?v=1691783130" }
+                { name: "Atypique (Non-Alcoholic) Amaretto Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/whiskey_1.png?v=1730131119" }
             ],
             "St. Thomas HH": [
                 { name: "Above (Non Alcoholic) Mojito", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/rc.png?v=1691782167" },
-                { name: "Above (Non-Alcoholic) Whiskey Cola", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/spritz.png?v=1691782849" },
-                { name: "Bellwoods Brewery (Non-Alcoholic) Jelly King Dry Hopped Sour with Mango, Tangerine and Lime", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/gin.png?v=1691885076" },
-                { name: "Blood Brothers Brewing (Non-Alcoholic) Sour Up Ale", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/mojito_3_aee2c4da-6b29-4370-bd19-7e9bec028d37.png?v=1730130940" },
-                { name: "Bluff (Non-Alcoholic) Margarita", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/mojito_2.png?v=1691885184" }
+                { name: "Above (Non-Alcoholic) Whiskey Cola", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/spritz.png?v=1691782849" }
             ]
         };
 
@@ -95,17 +124,17 @@
         const storeSelect = document.getElementById('store');
         const beerList = document.getElementById('beer-list');
         const deliverySections = document.getElementById('delivery-sections');
-        const notesTextarea = document.getElementById('store-notes');
+        const notesSections = document.getElementById('notes-section');
 
         function renderBeerList(store) {
             beerList.innerHTML = '';
             stores[store].forEach(beer => {
                 const beerItem = document.createElement('div');
-                beerItem.className = "beer-item bg-white p-4 border rounded-lg shadow-md hover:shadow-lg";
+                beerItem.className = "beer-item p-4 border rounded-lg shadow-md hover:shadow-lg";
                 beerItem.innerHTML = `
-                    <img src="${beer.image}" alt="${beer.name}" class="mx-auto mb-2">
-                    <p class="font-semibold">${beer.name}</p>
-                    <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-blue-700" data-name="${beer.name}">Add</button>
+                    <img src="${beer.image}" alt="${beer.name}" class="w-full h-32 object-cover rounded-md mb-3">
+                    <p class="font-semibold text-center">${beer.name}</p>
+                    <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 w-full hover:bg-blue-700" data-name="${beer.name}">Add</button>
                 `;
                 beerList.appendChild(beerItem);
             });
@@ -130,13 +159,13 @@
             for (const store in selectedItems) {
                 const section = document.createElement('div');
                 section.className = "mb-6";
-                section.innerHTML = `<h3 class="text-xl font-bold">${store}</h3>`;
+                section.innerHTML = `<h3 class="text-xl font-bold mb-2">${store}</h3>`;
 
                 const ul = document.createElement('ul');
-                ul.className = "bg-white p-6 border rounded-lg shadow-md space-y-3";
+                ul.className = "bg-gray-100 p-4 rounded-lg shadow space-y-3";
                 selectedItems[store].forEach((item, index) => {
                     const li = document.createElement('li');
-                    li.className = "flex justify-between items-center border-b py-2";
+                    li.className = "flex justify-between items-center py-2";
                     li.innerHTML = `
                         <span>${item.name}: ${item.quantity}</span>
                         <div>
@@ -150,45 +179,25 @@
                 deliverySections.appendChild(section);
             }
 
-            notesTextarea.value = storeNotes[storeSelect.value] || '';
+            updateNotesVisibility(storeSelect.value);
         }
 
-        notesTextarea.addEventListener('input', () => {
-            storeNotes[storeSelect.value] = notesTextarea.value;
-        });
+        function updateNotesVisibility(currentStore) {
+            Array.from(notesSections.children).forEach(note => {
+                if (note.id === `${currentStore}-notes`) {
+                    note.classList.remove('hidden');
+                } else {
+                    note.classList.add('hidden');
+                }
+            });
+        }
 
         storeSelect.addEventListener('change', () => {
             renderBeerList(storeSelect.value);
-            notesTextarea.value = storeNotes[storeSelect.value] || '';
+            updateNotesVisibility(storeSelect.value);
         });
 
         renderBeerList(storeSelect.value);
-
-        document.getElementById('export-button').addEventListener('click', () => {
-            const csvContent = "data:text/csv;charset=utf-8," +
-                Object.entries(selectedItems).map(([store, items]) => {
-                    return items.map(item => `${store},${item.name},${item.quantity}`).join("\n");
-                }).join("\n") + "\nNotes:\n" +
-                Object.entries(storeNotes).map(([store, notes]) => `${store}: ${notes}`).join("\n");
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement('a');
-            link.setAttribute('href', encodedUri);
-            link.setAttribute('download', 'inventory.csv');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-
-        document.getElementById('email-button').addEventListener('click', () => {
-            const csvContent = Object.entries(selectedItems).map(([store, items]) => {
-                return items.map(item => `${store},${item.name},${item.quantity}`).join("\n");
-            }).join("\n") + "\nNotes:\n" +
-                Object.entries(storeNotes).map(([store, notes]) => `${store}: ${notes}`).join("\n");
-
-            const mailtoLink = `mailto:?subject=Inventory Report&body=${encodeURIComponent(csvContent)}`;
-            window.location.href = mailtoLink;
-        });
     </script>
 </body>
 </html>
