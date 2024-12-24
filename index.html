@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory App</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -76,6 +77,44 @@
         .beer-item p {
             text-align: center;
         }
+
+        /* New popup styling */
+        .quantity-popup-container {
+            background: rgba(0, 0, 0, 0.6);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-popup {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            text-align: center;
+            transform: scale(0);
+            animation: popupShow 0.3s forwards;
+        }
+
+        @keyframes popupShow {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .beer-item .add-button {
+            background-color: #008CBA;
+        }
     </style>
 </head>
 
@@ -100,7 +139,12 @@
         </section>
 
         <section>
-            <h2 class="text-2xl font-bold mb-4">Notes for Each Store</h2>
+            <h2 class="text-2xl font-bold mb-4">Deliver to</h2>
+            <div id="delivery-sections" class="space-y-4">
+                <!-- Dynamic delivery sections will be rendered here -->
+            </div>
+
+            <h3 class="text-xl font-semibold mb-2">Notes for Each Store</h3>
             <div id="notes-section" class="mt-4 space-y-6">
                 <div id="Tom's Variety-notes">
                     <textarea class="note-textarea" placeholder="Add notes for Tom's Variety..."></textarea>
@@ -115,9 +159,10 @@
                     <textarea class="note-textarea" placeholder="Add notes for St. Thomas HH..."></textarea>
                 </div>
             </div>
+
             <div class="mt-6 flex gap-4">
-                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export CSV</button>
-                <button id="email-button" class="btn-primary px-4 py-2 rounded-lg shadow">Email CSV</button>
+                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export PDF</button>
+                <button id="email-button" class="btn-primary px-4 py-2 rounded-lg shadow">Email PDF</button>
             </div>
         </section>
     </main>
@@ -163,7 +208,7 @@
 
         const storeSelect = document.getElementById('store');
         const beerList = document.getElementById('beer-list');
-        const notesSections = document.getElementById('notes-section');
+        const deliverySections = document.getElementById('delivery-sections');
 
         function renderBeerList(store) {
             beerList.innerHTML = '';
@@ -182,10 +227,10 @@
                 button.addEventListener('click', () => {
                     const beerName = button.getAttribute('data-name');
                     const quantityWindow = document.createElement('div');
-                    quantityWindow.className = "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50";
+                    quantityWindow.className = "quantity-popup-container";
                     quantityWindow.innerHTML = `
-                        <div class="bg-white p-6 rounded-lg shadow-lg w-80">
-                            <h2 class="text-lg font-semibold mb-4">Enter Quantity for ${beerName}</h2>
+                        <div class="quantity-popup">
+                            <h2 class="text-xl font-semibold mb-4">Enter Quantity for ${beerName}</h2>
                             <div class="quantity-popup flex items-center justify-between mb-4">
                                 <button class="decrease bg-red-500 text-white rounded-lg p-2">-</button>
                                 <input type="number" value="1" class="w-20 text-center border rounded-lg" data-beer="${beerName}">
@@ -218,6 +263,7 @@
                         selectedItems[store].push({ name: beerName, quantity });
                         quantityWindow.remove();
                         renderBeerList(store);
+                        renderDeliverySections();
                     });
                 });
             });
@@ -226,26 +272,44 @@
         storeSelect.addEventListener('change', () => renderBeerList(storeSelect.value));
         renderBeerList(storeSelect.value);
 
+        function renderDeliverySections() {
+            deliverySections.innerHTML = '';
+            Object.keys(selectedItems).forEach(store => {
+                const deliverySection = document.createElement('div');
+                deliverySection.className = 'p-4 border rounded-lg shadow-md mb-4';
+                deliverySection.innerHTML = `
+                    <h4 class="font-semibold">${store}</h4>
+                    <ul class="list-disc ml-6">
+                        ${selectedItems[store].map(item => `<li>${item.name} - ${item.quantity}</li>`).join('')}
+                    </ul>
+                `;
+                deliverySections.appendChild(deliverySection);
+            });
+        }
+
         document.getElementById('export-button').addEventListener('click', () => {
-            exportCSV();
+            exportPDF();
         });
 
-        function exportCSV() {
-            const headers = ["Store", "Beer Name", "Quantity"];
-            let rows = [];
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.text("Inventory Report", 14, 20);
+
+            let y = 30;
             Object.keys(selectedItems).forEach(store => {
+                doc.setFontSize(14);
+                doc.text(store, 14, y);
+                y += 10;
                 selectedItems[store].forEach(item => {
-                    rows.push([store, item.name, item.quantity]);
+                    doc.text(`${item.name} - ${item.quantity}`, 20, y);
+                    y += 10;
                 });
+                y += 10;
             });
-            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
-            rows.forEach(row => {
-                csvContent += row.join(",") + "\n";
-            });
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", "inventory.csv");
-            link.click();
+
+            doc.save('inventory-report.pdf');
         }
     </script>
 </body>
