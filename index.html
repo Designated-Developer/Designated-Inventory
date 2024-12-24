@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory App</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -48,8 +49,8 @@
 </head>
 <body class="bg-white">
     <header class="text-center">
-        <h1 class="text-4xl font-extrabold">Designated Drinks</h1>
-        <p>Inventory System V1.01</p>
+        <h1 class="text-4xl font-extrabold">Designated Drinks Inventory</h1>
+        <p>Streamline your inventory process with our brand colors.</p>
     </header>
 
     <main class="max-w-5xl mx-auto mt-6">
@@ -90,8 +91,7 @@
                 </div>
             </div>
             <div class="mt-6 flex gap-4">
-                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export to CSV</button>
-                <button id="email-button" class="btn-primary px-4 py-2 rounded-lg shadow">Email CSV</button>
+                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export to PDF</button>
             </div>
         </section>
     </main>
@@ -99,63 +99,22 @@
     <script>
         const stores = {
             "Tom's Variety": [
-                { name: "Collective Arts Brewing  (Non-Alcoholic) Hazy Pale Ale", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/castout_2.png?v=1672835733" },
-                { name: "Collective Arts Brewing (Non-Alcoholic) IPA", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/castout_3.png?v=1672836030" },
-                { name: "Triple Bogey Brewing Co. (Non-Alcoholic) Triple Bogey Premium Lager", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/Comet_2.png?v=1671738678" },
-                { name: "Nickel Brook (Non-Alcoholic) Cause and No Effect Ale", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_1.png?v=1713907704" },
-                { name: "Nickel Brook (Non-Alcoholic) Wicked Tame Hazy IPA", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_d4d4ed08-b365-46eb-87ba-368d62cdefe2.png?v=1719500169" },
-                { name: "Sober Carpenter (Non-Alcoholic) Black IPA Limited Edition", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sober_1.png?v=1674760820" },
-                { name: "Sober Carpenter (Non-Alcoholic) Blonde Ale", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/TB_1.png?v=1652816630" },
-                { name: "Sober Carpenter (Non-Alcoholic) Craft Cider", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cider.png?v=1690910368" },
-                { name: "Sober Carpenter (Non-Alcoholic) Double Hopped Hazy IPA Limited Edition", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sober.png?v=1674760432" },
-                { name: "Sober Carpenter (Non-Alcoholic) Golden Pale Ale- Limited Edition", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/gooder_1.png?v=1721217283" },
-                { name: "Sober Carpenter (Non-Alcoholic) IPA", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/TB_2.png?v=1652816706" },
-                { name: "Sober Carpenter (Non-Alcoholic) Irish Red", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/IrishRed.png?v=1651748880" },
-                { name: "Sober Carpenter (Non-Alcoholic) Organic Blonde Pilsner", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/pils.png?v=1733935628" },
-                { name: "Sober Carpenter (Non-Alcoholic) Organic Session IPA", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/SCIPA_1.png?v=1652313905" },
-                { name: "Sober Carpenter (Non-Alcoholic) Raspberry Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/raspberry_10.png?v=1695398465" },
-                { name: "One For The Road Brewing Co. (Non-Alcoholic) Proceed With Caution", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/gooder_9.png?v=1721956552" },
-                { name: "One For The Road Brewing Co. (Non-Alcoholic) Saskaberry Blonde Ale", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/gooder_12.png?v=1721957373" },
-                { name: "One For The Road Brewing Co. (Non-Alcoholic) Still Struggling Espresso Stout", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/gooder_13.png?v=1721957646" },
-                { name: "One For The Road Brewing Co. (Non-Alcoholic) Stone Sofa Kolsch", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/gooder_11.png?v=1721957178" },
-                { name: "One For The Road Brewing Co. (Non-Alcoholic) What's The Point?", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/whatsthepoint.png?v=1657114049" }
-
+                { name: "BSA (Non-Alcoholic) Blonde Pilsner", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sour.png?v=1672425148" },
+                { name: "BSA (Non-Alcoholic) Raspberry Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_4.png?v=1674777834" }
             ],
             "Herms Sports": [
-                { name: "Blood Brothers Brewing (Non-Alcoholic) Blood Zero", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/jelly.png?v=1676166226" },
-                { name: "Bellwoods Brewery (Non-Alcoholic) Sparkly Water With Hops & Grapefruit", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_2_4d3fd692-e39e-460b-825b-ca0336206438.png?v=1716930879" },
-                { name: "Bellwoods Brewery (Non-Alcoholic) Sparkly Water Mojito", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_2.png?v=1715606681" }
-            ],
-            "Kilworth HH": [
-                { name: "Atypique (Non-Alcoholic) Gin & Tonic", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/sparkly_6.png?v=1683676464" },
-                { name: "Atypique (Non-Alcoholic) Amaretto Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/whiskey_1.png?v=1730131119" },
-                { name: "Atypique (Non-Alcoholic) Spiced Rum and Cola", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/spritz.png?v=1691782849" }
-            ],
-            "St. Thomas HH": [
-                { name: "Above (Non Alcoholic) Mojito", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/rc.png?v=1691782167" },
-                { name: "Above (Non-Alcoholic) Whiskey Cola", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/spritz.png?v=1691782849" },
-                { name: "Bellwoods Brewery (Non-Alcoholic) Jelly King Dry Hopped Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/jelly.png?v=1676166226" }
+                { name: "Blood Brothers Brewing (Non-Alcoholic) Blood Zero", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/jelly.png?v=1676166226" }
             ]
         };
 
         const selectedItems = {
             "Tom's Variety": [],
-            "Herms Sports": [],
-            "Kilworth HH": [],
-            "St. Thomas HH": []
-        };
-
-        const storeNotes = {
-            "Tom's Variety": "",
-            "Herms Sports": "",
-            "Kilworth HH": "",
-            "St. Thomas HH": ""
+            "Herms Sports": []
         };
 
         const storeSelect = document.getElementById('store');
         const beerList = document.getElementById('beer-list');
         const deliverySections = document.getElementById('delivery-sections');
-        const notesSections = document.getElementById('notes-section');
 
         function renderBeerList(store) {
             beerList.innerHTML = '';
@@ -165,14 +124,14 @@
                 beerItem.innerHTML = `
                     <img src="${beer.image}" alt="${beer.name}" class="w-full h-32 object-cover rounded-md mb-3">
                     <p class="font-semibold text-center">${beer.name}</p>
-                    <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 w-full hover:bg-blue-700" data-name="${beer.name}">Add</button>
+                    <button class="add-button btn-primary px-4 py-2 rounded-lg mt-3 w-full">Add</button>
                 `;
                 beerList.appendChild(beerItem);
             });
 
             document.querySelectorAll('.add-button').forEach(button => {
                 button.addEventListener('click', () => {
-                    const beerName = button.getAttribute('data-name');
+                    const beerName = button.previousElementSibling.textContent;
                     const quantity = prompt(`Enter quantity for ${beerName}:`);
 
                     if (quantity && !isNaN(quantity)) {
@@ -194,91 +153,38 @@
 
                 const ul = document.createElement('ul');
                 ul.className = "bg-gray-100 p-4 rounded-lg shadow space-y-3";
-                selectedItems[store].forEach((item, index) => {
+                selectedItems[store].forEach(item => {
                     const li = document.createElement('li');
                     li.className = "flex justify-between items-center py-2";
-                    li.innerHTML = `
-                        <span>${item.name}: ${item.quantity}</span>
-                        <div>
-                            <button class="edit-button text-blue-600 mr-4" data-store="${store}" data-index="${index}">Edit</button>
-                            <button class="delete-button text-red-600" data-store="${store}" data-index="${index}">Delete</button>
-                        </div>
-                    `;
+                    li.innerHTML = `<span>${item.name}: ${item.quantity}</span>`;
                     ul.appendChild(li);
                 });
                 section.appendChild(ul);
                 deliverySections.appendChild(section);
             }
-
-            updateNotesVisibility(storeSelect.value);
-
-            document.querySelectorAll('.edit-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const store = e.target.getAttribute('data-store');
-                    const index = e.target.getAttribute('data-index');
-                    const newQuantity = prompt(`Edit quantity for ${selectedItems[store][index].name}:`, selectedItems[store][index].quantity);
-                    if (newQuantity && !isNaN(newQuantity)) {
-                        selectedItems[store][index].quantity = parseInt(newQuantity, 10);
-                        renderDeliverySections();
-                    } else {
-                        alert('Please enter a valid number.');
-                    }
-                });
-            });
-
-            document.querySelectorAll('.delete-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const store = e.target.getAttribute('data-store');
-                    const index = e.target.getAttribute('data-index');
-                    selectedItems[store].splice(index, 1);
-                    renderDeliverySections();
-                });
-            });
         }
 
-        function updateNotesVisibility(currentStore) {
-            Array.from(notesSections.children).forEach(note => {
-                if (note.id === `${currentStore}-notes`) {
-                    note.classList.remove('hidden');
-                } else {
-                    note.classList.add('hidden');
-                }
-            });
-        }
+        document.getElementById('export-button').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
 
-        function exportToCSV() {
-            let csvContent = "Store,Beer Name,Quantity,Notes\n";
             for (const store in selectedItems) {
-                selectedItems[store].forEach(item => {
-                    csvContent += `${store},${item.name},${item.quantity},${storeNotes[store]}\n`;
-                });
-            }
-            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "inventory.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+                pdf.text(`${store} Delivery`, 10, 10);
 
-        function emailCSV() {
-            let csvContent = "Store,Beer Name,Quantity,Notes\n";
-            for (const store in selectedItems) {
+                let y = 20;
                 selectedItems[store].forEach(item => {
-                    csvContent += `${store},${item.name},${item.quantity},${storeNotes[store]}\n`;
+                    pdf.text(`${item.name}: ${item.quantity}`, 10, y);
+                    y += 10;
                 });
-            }
-            const mailtoLink = `mailto:?subject=Inventory Report&body=${encodeURIComponent(csvContent)}`;
-            window.location.href = mailtoLink;
-        }
 
-        document.getElementById('export-button').addEventListener('click', exportToCSV);
-        document.getElementById('email-button').addEventListener('click', emailCSV);
+                pdf.addPage();
+            }
+
+            pdf.save('inventory.pdf');
+        });
 
         storeSelect.addEventListener('change', () => {
             renderBeerList(storeSelect.value);
-            updateNotesVisibility(storeSelect.value);
         });
 
         renderBeerList(storeSelect.value);
