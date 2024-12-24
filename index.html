@@ -8,21 +8,23 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
         }
         header {
-            background: linear-gradient(to right, #4ade80, #16a34a);
+            background: linear-gradient(to right, #000080, #000000);
             color: white;
             padding: 1.5rem;
             border-radius: 8px;
         }
         main {
-            background: white;
+            background: #f8f8f8;
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         #beer-list .beer-item {
-            background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
+            background: linear-gradient(to bottom, #ffffff, #e6e6e6);
             transition: transform 0.2s ease-in-out;
         }
         #beer-list .beer-item:hover {
@@ -33,14 +35,21 @@
             transition: background-color 0.2s ease-in-out;
         }
         button:hover {
-            background-color: #059669;
+            background-color: #000080;
+        }
+        .btn-primary {
+            background-color: #000080;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #000000;
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-white">
     <header class="text-center">
-        <h1 class="text-4xl font-extrabold">Inventory Management</h1>
-        <p>Streamline your inventory process with ease.</p>
+        <h1 class="text-4xl font-extrabold">Designated Drinks Inventory</h1>
+        <p>Streamline your inventory process with our brand colors.</p>
     </header>
 
     <main class="max-w-5xl mx-auto mt-6">
@@ -81,8 +90,8 @@
                 </div>
             </div>
             <div class="mt-6 flex gap-4">
-                <button id="export-button" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700">Export to CSV</button>
-                <button id="email-button" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600">Email CSV</button>
+                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export to CSV</button>
+                <button id="email-button" class="btn-primary px-4 py-2 rounded-lg shadow">Email CSV</button>
             </div>
         </section>
     </main>
