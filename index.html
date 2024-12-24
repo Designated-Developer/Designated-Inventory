@@ -44,12 +44,22 @@
         .btn-primary:hover {
             background-color: #000000;
         }
+        .quantity-popup button {
+            font-size: 1.5rem;
+            width: 80px;
+            height: 80px;
+        }
+        .quantity-popup .action-buttons button {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body class="bg-white">
     <header class="text-center">
         <h1 class="text-4xl font-extrabold">Designated Drinks</h1>
-        <p>Inventory System V1.01</p>
+        <p>Inventory System V2.01</p>
     </header>
 
     <main class="max-w-5xl mx-auto mt-6">
@@ -166,91 +176,25 @@
                     const quantityWindow = document.createElement('div');
                     quantityWindow.className = "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50";
                     quantityWindow.innerHTML = `
-                        <div class="bg-white p-6 rounded-lg shadow-lg w-72">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-80">
                             <h2 class="text-lg font-semibold mb-4">Enter Quantity for ${beerName}</h2>
-                            <div class="flex items-center justify-center mb-4">
-                                <button id="decrease-quantity" class="bg-gray-200 text-lg px-4 py-2 rounded-lg">-</button>
-                                <input id="quantity-input" type="number" value="1" min="1" class="w-16 text-center mx-2 border rounded-lg">
-                                <button id="increase-quantity" class="bg-gray-200 text-lg px-4 py-2 rounded-lg">+</button>
+                            <div class="quantity-popup flex items-center justify-between mb-4">
+                                <button class="bg-red-500 text-white rounded-lg">-</button>
+                                <input type="number" value="1" class="w-20 text-center border rounded-lg">
+                                <button class="bg-green-500 text-white rounded-lg">+</button>
                             </div>
-                            <div class="flex justify-between">
-                                <button id="confirm-quantity" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Confirm</button>
-                                <button id="cancel-quantity" class="bg-gray-400 text-white px-4 py-2 rounded-lg">Cancel</button>
+                            <div class="action-buttons flex gap-4">
+                                <button class="bg-gray-500 text-white rounded-lg">Cancel</button>
+                                <button class="bg-blue-500 text-white rounded-lg">Confirm</button>
                             </div>
                         </div>
                     `;
-
                     document.body.appendChild(quantityWindow);
-
-                    const quantityInput = document.getElementById('quantity-input');
-
-                    document.getElementById('decrease-quantity').addEventListener('click', () => {
-                        if (quantityInput.value > 1) {
-                            quantityInput.value--;
-                        }
-                    });
-
-                    document.getElementById('increase-quantity').addEventListener('click', () => {
-                        quantityInput.value++;
-                    });
-
-                    document.getElementById('confirm-quantity').addEventListener('click', () => {
-                        const quantity = parseInt(quantityInput.value, 10);
-                        if (!isNaN(quantity) && quantity > 0) {
-                            selectedItems[store].push({ name: beerName, quantity });
-                            renderDeliverySections();
-                            document.body.removeChild(quantityWindow);
-                        }
-                    });
-
-                    document.getElementById('cancel-quantity').addEventListener('click', () => {
-                        document.body.removeChild(quantityWindow);
-                    });
                 });
             });
         }
 
-        function renderDeliverySections() {
-            deliverySections.innerHTML = '';
-            for (const store in selectedItems) {
-                const section = document.createElement('div');
-                section.className = "mb-6";
-                section.innerHTML = `<h3 class="text-xl font-bold mb-2">${store}</h3>`;
-
-                const ul = document.createElement('ul');
-                ul.className = "bg-gray-100 p-4 rounded-lg shadow space-y-3";
-                selectedItems[store].forEach((item, index) => {
-                    const li = document.createElement('li');
-                    li.className = "flex justify-between items-center py-2";
-                    li.innerHTML = `
-                        <span>${item.name}: ${item.quantity}</span>
-                        <div>
-                            <button class="edit-button text-blue-600 mr-4" data-store="${store}" data-index="${index}">Edit</button>
-                            <button class="delete-button text-red-600" data-store="${store}" data-index="${index}">Delete</button>
-                        </div>
-                    `;
-                    ul.appendChild(li);
-                });
-                section.appendChild(ul);
-                deliverySections.appendChild(section);
-            }
-        }
-
-        function updateNotesVisibility(currentStore) {
-            Array.from(notesSections.children).forEach(note => {
-                if (note.id === `${currentStore}-notes`) {
-                    note.classList.remove('hidden');
-                } else {
-                    note.classList.add('hidden');
-                }
-            });
-        }
-
-        storeSelect.addEventListener('change', () => {
-            renderBeerList(storeSelect.value);
-            updateNotesVisibility(storeSelect.value);
-        });
-
+        storeSelect.addEventListener('change', () => renderBeerList(storeSelect.value));
         renderBeerList(storeSelect.value);
     </script>
 </body>
