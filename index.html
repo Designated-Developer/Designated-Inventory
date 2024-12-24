@@ -44,38 +44,28 @@
         .btn-primary:hover {
             background-color: #000000;
         }
-        .popup {
+        .quantity-popup {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
             padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 400px;
         }
-        .popup button {
-            font-size: 1.5rem;
-            padding: 0.75rem 1.5rem;
-        }
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+        .quantity-popup button {
+            font-size: 1.25rem;
+            padding: 0.5rem 1.5rem;
         }
     </style>
 </head>
 <body class="bg-white">
     <header class="text-center">
         <h1 class="text-4xl font-extrabold">Designated Drinks</h1>
-        <p>Inventory System V1.01</p>
+        <p>Inventory System V1.02</p>
     </header>
 
     <main class="max-w-5xl mx-auto mt-6">
@@ -96,31 +86,24 @@
             <h2 class="text-2xl font-bold mb-4">Deliver to</h2>
             <div id="delivery-sections" class="space-y-4">
             </div>
-            <div id="notes-section" class="mt-4 space-y-6">
-                <h3 class="text-xl font-semibold mb-2">Notes for Each Store</h3>
-                <textarea id="notes" class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for the store..."></textarea>
-            </div>
             <div class="mt-6 flex gap-4">
-                <button id="export-pdf" class="btn-primary px-4 py-2 rounded-lg shadow">Export to PDF</button>
+                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export PDF</button>
             </div>
         </section>
     </main>
 
-    <div id="popup" class="popup hidden">
-        <div class="text-center mb-4">
-            <h2 class="text-2xl font-bold">Select Quantity</h2>
-        </div>
-        <div class="flex justify-center items-center gap-4 mb-6">
-            <button id="decrement" class="bg-red-500 text-white rounded-lg p-4 text-3xl">-</button>
-            <span id="quantity" class="text-3xl font-bold">0</span>
-            <button id="increment" class="bg-green-500 text-white rounded-lg p-4 text-3xl">+</button>
+    <div id="quantity-popup" class="quantity-popup hidden">
+        <h3 class="text-lg font-semibold mb-4 text-center">Enter Quantity</h3>
+        <div class="flex justify-center items-center mb-6">
+            <button id="decrease-quantity" class="text-xl font-bold px-6 py-3 border rounded-lg bg-gray-200 mr-4">-</button>
+            <span id="quantity-display" class="text-xl font-bold">0</span>
+            <button id="increase-quantity" class="text-xl font-bold px-6 py-3 border rounded-lg bg-gray-200 ml-4">+</button>
         </div>
         <div class="flex justify-around">
-            <button id="confirm" class="btn-primary px-6 py-3 rounded-lg">Confirm</button>
-            <button id="cancel" class="bg-gray-400 text-white px-6 py-3 rounded-lg">Cancel</button>
+            <button id="confirm-quantity" class="btn-primary px-4 py-2 rounded-lg">Confirm</button>
+            <button id="cancel-popup" class="btn-primary px-4 py-2 rounded-lg">Cancel</button>
         </div>
     </div>
-    <div id="overlay" class="overlay hidden"></div>
 
     <script>
         const stores = {
@@ -130,24 +113,24 @@
             "St. Thomas HH": []
         };
 
-        const selectedItems = {
-            "Tom's Variety": [],
-            "Herms Sports": [],
-            "Kilworth HH": [],
-            "St. Thomas HH": []
-        };
+        const allBeers = [
+            { name: "Collective Arts Brewing (Non-Alcoholic) Hazy Pale Ale", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/castout_2.png?v=1672835733" },
+            { name: "Collective Arts Brewing (Non-Alcoholic) IPA", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/castout_3.png?v=1672836030" },
+            { name: "Triple Bogey Brewing Co. (Non-Alcoholic) Premium Lager", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/Comet_2.png?v=1671738678" }
+            // Add more beers as needed
+        ];
+
+        Object.keys(stores).forEach(store => {
+            stores[store] = [...allBeers];
+        });
 
         const storeSelect = document.getElementById('store');
         const beerList = document.getElementById('beer-list');
-        const popup = document.getElementById('popup');
-        const overlay = document.getElementById('overlay');
-        const quantityDisplay = document.getElementById('quantity');
-        const decrementButton = document.getElementById('decrement');
-        const incrementButton = document.getElementById('increment');
-        const confirmButton = document.getElementById('confirm');
-        const cancelButton = document.getElementById('cancel');
-        let currentBeer = null;
-        let quantity = 0;
+        const deliverySections = document.getElementById('delivery-sections');
+        const quantityPopup = document.getElementById('quantity-popup');
+        const quantityDisplay = document.getElementById('quantity-display');
+        let currentQuantity = 0;
+        let selectedBeer = null;
 
         function renderBeerList(store) {
             beerList.innerHTML = '';
@@ -157,72 +140,70 @@
                 beerItem.innerHTML = `
                     <img src="${beer.image}" alt="${beer.name}" class="w-full h-32 object-cover rounded-md mb-3">
                     <p class="font-semibold text-center">${beer.name}</p>
-                    <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 w-full hover:bg-blue-700" data-name="${beer.name}">Add</button>
+                    <button class="add-button btn-primary px-4 py-2 rounded-lg mt-3 w-full" data-name="${beer.name}">Add</button>
                 `;
                 beerList.appendChild(beerItem);
             });
 
             document.querySelectorAll('.add-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    currentBeer = button.getAttribute('data-name');
-                    showPopup();
+                button.addEventListener('click', (e) => {
+                    selectedBeer = stores[store].find(b => b.name === e.target.getAttribute('data-name'));
+                    currentQuantity = 0;
+                    quantityDisplay.textContent = currentQuantity;
+                    quantityPopup.classList.remove('hidden');
                 });
             });
         }
 
-        function showPopup() {
-            quantity = 0;
-            quantityDisplay.textContent = quantity;
-            popup.classList.remove('hidden');
-            overlay.classList.remove('hidden');
-        }
-
-        function hidePopup() {
-            popup.classList.add('hidden');
-            overlay.classList.add('hidden');
-        }
-
-        decrementButton.addEventListener('click', () => {
-            if (quantity > 0) quantity--;
-            quantityDisplay.textContent = quantity;
-        });
-
-        incrementButton.addEventListener('click', () => {
-            quantity++;
-            quantityDisplay.textContent = quantity;
-        });
-
-        confirmButton.addEventListener('click', () => {
-            const store = storeSelect.value;
-            selectedItems[store].push({ name: currentBeer, quantity });
-            hidePopup();
-            renderDeliverySections();
-        });
-
-        cancelButton.addEventListener('click', hidePopup);
-
         function renderDeliverySections() {
-            const deliverySections = document.getElementById('delivery-sections');
             deliverySections.innerHTML = '';
-            for (const store in selectedItems) {
+            for (const store in stores) {
                 const section = document.createElement('div');
                 section.className = "mb-6";
                 section.innerHTML = `<h3 class="text-xl font-bold mb-2">${store}</h3>`;
-
                 const ul = document.createElement('ul');
                 ul.className = "bg-gray-100 p-4 rounded-lg shadow space-y-3";
-                selectedItems[store].forEach(item => {
-                    const li = document.createElement('li');
-                    li.className = "flex justify-between items-center py-2";
-                    li.textContent = `${item.name}: ${item.quantity}`;
-                    ul.appendChild(li);
+                stores[store].forEach(item => {
+                    if (item.quantity) {
+                        const li = document.createElement('li');
+                        li.className = "flex justify-between items-center py-2";
+                        li.innerHTML = `<span>${item.name}: ${item.quantity}</span>`;
+                        ul.appendChild(li);
+                    }
                 });
                 section.appendChild(ul);
                 deliverySections.appendChild(section);
             }
         }
 
-        storeSelect.addEventListener('change', () => renderBeerList(storeSelect.value));
+        document.getElementById('increase-quantity').addEventListener('click', () => {
+            currentQuantity += 1;
+            quantityDisplay.textContent = currentQuantity;
+        });
+
+        document.getElementById('decrease-quantity').addEventListener('click', () => {
+            if (currentQuantity > 0) {
+                currentQuantity -= 1;
+                quantityDisplay.textContent = currentQuantity;
+            }
+        });
+
+        document.getElementById('confirm-quantity').addEventListener('click', () => {
+            if (selectedBeer && currentQuantity > 0) {
+                selectedBeer.quantity = currentQuantity;
+                renderDeliverySections();
+            }
+            quantityPopup.classList.add('hidden');
+        });
+
+        document.getElementById('cancel-popup').addEventListener('click', () => {
+            quantityPopup.classList.add('hidden');
+        });
+
+        storeSelect.addEventListener('change', () => {
+            renderBeerList(storeSelect.value);
+        });
+
         renderBeerList(storeSelect.value);
     </script>
 </body>
