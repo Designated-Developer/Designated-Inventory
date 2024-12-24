@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -67,7 +66,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 20px;
+        }
+        .quantity-controls button {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
         }
     </style>
 </head>
@@ -114,10 +118,6 @@
                     <textarea class="w-full p-3 border rounded-lg shadow-sm" id="St. Thomas HH-note" placeholder="Add notes for St. Thomas HH..."></textarea>
                 </div>
             </div>
-            <div class="mt-6 flex gap-4">
-                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export PDF</button>
-                <button id="email-button" class="btn-primary px-4 py-2 rounded-lg shadow">Email PDF</button>
-            </div>
         </section>
     </main>
 
@@ -125,9 +125,9 @@
         <div class="modal-content">
             <h3 class="text-xl font-bold mb-4">Enter Quantity</h3>
             <div class="quantity-controls">
-                <button id="decrease-quantity" class="bg-red-500 text-white px-4 py-2 rounded-lg">-</button>
+                <button id="decrease-quantity" class="bg-red-500 text-white rounded-lg">-</button>
                 <span id="quantity-display" class="text-xl font-semibold">1</span>
-                <button id="increase-quantity" class="bg-green-500 text-white px-4 py-2 rounded-lg">+</button>
+                <button id="increase-quantity" class="bg-green-500 text-white rounded-lg">+</button>
             </div>
             <div class="mt-4">
                 <button id="confirm-quantity" class="btn-primary px-4 py-2 rounded-lg">Confirm</button>
@@ -140,16 +140,32 @@
         const stores = {
             "Tom's Variety": [
                 { name: "BSA (Non-Alcoholic) Blonde Pilsner", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/sour.png?v=1672425148" },
-                { name: "BSA (Non-Alcoholic) Raspberry Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_4.png?v=1674777834" }
+                { name: "BSA (Non-Alcoholic) Raspberry Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_4.png?v=1674777834" },
+                { name: "BSA (Non-Alcoholic) Lime Lemon Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_2.png?v=1674777334" },
+                { name: "BSA (Non-Alcoholic) Orange White", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/raspberry_3.png?v=1674777651" }
             ],
             "Herms Sports": [
-                { name: "Blood Brothers Brewing (Non-Alcoholic) Blood Zero", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/jelly.png?v=1676166226" }
+                { name: "Blood Brothers Brewing (Non-Alcoholic) Blood Zero", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/jelly.png?v=1676166226" },
+                { name: "Bellwoods Brewery (Non-Alcoholic) Sparkly Water With Hops & Grapefruit", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_2_4d3fd692-e39e-460b-825b-ca0336206438.png?v=1716930879" },
+                { name: "Bellwoods Brewery (Non-Alcoholic) Sparkly Water Mojito", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_2.png?v=1715606681" }
+            ],
+            "Kilworth HH": [
+                { name: "Atypique (Non-Alcoholic) Gin & Tonic", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/sparkly_6.png?v=1683676464" },
+                { name: "Atypique (Non-Alcoholic) Amaretto Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/whiskey_1.png?v=1730131119" },
+                { name: "Atypique (Non-Alcoholic) Spiced Rum and Cola", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/spritz.png?v=1691782849" }
+            ],
+            "St. Thomas HH": [
+                { name: "Above (Non Alcoholic) Mojito", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/rc.png?v=1691782167" },
+                { name: "Above (Non-Alcoholic) Whiskey Cola", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/spritz.png?v=1691782849" },
+                { name: "Bellwoods Brewery (Non-Alcoholic) Jelly King Dry Hopped Sour", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/jelly.png?v=1676166226" }
             ]
         };
 
         const selectedItems = {
             "Tom's Variety": [],
-            "Herms Sports": []
+            "Herms Sports": [],
+            "Kilworth HH": [],
+            "St. Thomas HH": []
         };
 
         const storeSelect = document.getElementById('store');
@@ -212,7 +228,23 @@
         });
 
         function renderDeliverySections() {
-            console.log(selectedItems);
+            const deliverySections = document.getElementById('delivery-sections');
+            deliverySections.innerHTML = '';
+            for (const store in selectedItems) {
+                if (selectedItems[store].length > 0) {
+                    const section = document.createElement('div');
+                    section.innerHTML = `<h3 class="text-xl font-bold mb-2">${store}</h3>`;
+                    const ul = document.createElement('ul');
+                    ul.className = "list-disc pl-5";
+                    selectedItems[store].forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.name}: ${item.quantity}`;
+                        ul.appendChild(li);
+                    });
+                    section.appendChild(ul);
+                    deliverySections.appendChild(section);
+                }
+            }
         }
 
         storeSelect.addEventListener('change', () => {
