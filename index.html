@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory App</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -52,20 +53,27 @@
             background: white;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
             width: 90%;
             max-width: 400px;
         }
         .quantity-popup button {
-            font-size: 1.25rem;
-            padding: 0.5rem 1.5rem;
+            width: 48%;
+            padding: 1rem;
+            font-size: 1.2rem;
+        }
+        .quantity-popup .quantity-controls button {
+            width: 64px;
+            height: 64px;
+            font-size: 2rem;
         }
     </style>
 </head>
 <body class="bg-white">
     <header class="text-center">
         <h1 class="text-4xl font-extrabold">Designated Drinks</h1>
-        <p>Inventory System V1.02</p>
+        <p>Inventory System V1.01</p>
     </header>
 
     <main class="max-w-5xl mx-auto mt-6">
@@ -86,22 +94,41 @@
             <h2 class="text-2xl font-bold mb-4">Deliver to</h2>
             <div id="delivery-sections" class="space-y-4">
             </div>
+            <div id="notes-section" class="mt-4 space-y-6">
+                <h3 class="text-xl font-semibold mb-2">Notes for Each Store</h3>
+                <div id="Tom's Variety-notes" class="hidden">
+                    <h4 class="text-lg font-semibold">Tom's Variety</h4>
+                    <textarea class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for Tom's Variety..."></textarea>
+                </div>
+                <div id="Herms Sports-notes" class="hidden">
+                    <h4 class="text-lg font-semibold">Herms Sports</h4>
+                    <textarea class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for Herms Sports..."></textarea>
+                </div>
+                <div id="Kilworth HH-notes" class="hidden">
+                    <h4 class="text-lg font-semibold">Kilworth HH</h4>
+                    <textarea class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for Kilworth HH..."></textarea>
+                </div>
+                <div id="St. Thomas HH-notes" class="hidden">
+                    <h4 class="text-lg font-semibold">St. Thomas HH</h4>
+                    <textarea class="w-full p-3 border rounded-lg shadow-sm" placeholder="Add notes for St. Thomas HH..."></textarea>
+                </div>
+            </div>
             <div class="mt-6 flex gap-4">
-                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export PDF</button>
+                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export to PDF</button>
             </div>
         </section>
     </main>
 
     <div id="quantity-popup" class="quantity-popup hidden">
-        <h3 class="text-lg font-semibold mb-4 text-center">Enter Quantity</h3>
-        <div class="flex justify-center items-center mb-6">
-            <button id="decrease-quantity" class="text-xl font-bold px-6 py-3 border rounded-lg bg-gray-200 mr-4">-</button>
-            <span id="quantity-display" class="text-xl font-bold">0</span>
-            <button id="increase-quantity" class="text-xl font-bold px-6 py-3 border rounded-lg bg-gray-200 ml-4">+</button>
+        <h3 class="text-2xl font-bold mb-4 text-center">Select Quantity</h3>
+        <div class="quantity-controls flex justify-center items-center mb-4">
+            <button id="decrease" class="btn-primary">-</button>
+            <span id="quantity" class="text-3xl mx-4">1</span>
+            <button id="increase" class="btn-primary">+</button>
         </div>
-        <div class="flex justify-around">
-            <button id="confirm-quantity" class="btn-primary px-4 py-2 rounded-lg">Confirm</button>
-            <button id="cancel-popup" class="btn-primary px-4 py-2 rounded-lg">Cancel</button>
+        <div class="flex justify-between">
+            <button id="cancel-button" class="bg-red-500 text-white rounded-lg">Cancel</button>
+            <button id="confirm-button" class="bg-green-500 text-white rounded-lg">Confirm</button>
         </div>
     </div>
 
@@ -113,24 +140,30 @@
             "St. Thomas HH": []
         };
 
-        const allBeers = [
-            { name: "Collective Arts Brewing (Non-Alcoholic) Hazy Pale Ale", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/castout_2.png?v=1672835733" },
-            { name: "Collective Arts Brewing (Non-Alcoholic) IPA", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/castout_3.png?v=1672836030" },
-            { name: "Triple Bogey Brewing Co. (Non-Alcoholic) Premium Lager", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/Comet_2.png?v=1671738678" }
-            // Add more beers as needed
-        ];
+        const selectedItems = {
+            "Tom's Variety": [],
+            "Herms Sports": [],
+            "Kilworth HH": [],
+            "St. Thomas HH": []
+        };
 
-        Object.keys(stores).forEach(store => {
-            stores[store] = [...allBeers];
-        });
+        const storeNotes = {
+            "Tom's Variety": "",
+            "Herms Sports": "",
+            "Kilworth HH": "",
+            "St. Thomas HH": ""
+        };
 
         const storeSelect = document.getElementById('store');
         const beerList = document.getElementById('beer-list');
         const deliverySections = document.getElementById('delivery-sections');
         const quantityPopup = document.getElementById('quantity-popup');
-        const quantityDisplay = document.getElementById('quantity-display');
-        let currentQuantity = 0;
-        let selectedBeer = null;
+        const quantityDisplay = document.getElementById('quantity');
+        const confirmButton = document.getElementById('confirm-button');
+        const cancelButton = document.getElementById('cancel-button');
+
+        let currentQuantity = 1;
+        let currentBeer = null;
 
         function renderBeerList(store) {
             beerList.innerHTML = '';
@@ -138,66 +171,81 @@
                 const beerItem = document.createElement('div');
                 beerItem.className = "beer-item p-4 border rounded-lg shadow-md hover:shadow-lg";
                 beerItem.innerHTML = `
-                    <img src="${beer.image}" alt="${beer.name}" class="w-full h-32 object-cover rounded-md mb-3">
-                    <p class="font-semibold text-center">${beer.name}</p>
-                    <button class="add-button btn-primary px-4 py-2 rounded-lg mt-3 w-full" data-name="${beer.name}">Add</button>
+                    <p class="font-semibold text-center">${beer}</p>
+                    <button class="btn-primary w-full mt-3" onclick="openQuantityPopup('${beer}')">Add</button>
                 `;
                 beerList.appendChild(beerItem);
             });
-
-            document.querySelectorAll('.add-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    selectedBeer = stores[store].find(b => b.name === e.target.getAttribute('data-name'));
-                    currentQuantity = 0;
-                    quantityDisplay.textContent = currentQuantity;
-                    quantityPopup.classList.remove('hidden');
-                });
-            });
         }
+
+        function openQuantityPopup(beer) {
+            currentBeer = beer;
+            currentQuantity = 1;
+            quantityDisplay.textContent = currentQuantity;
+            quantityPopup.classList.remove('hidden');
+        }
+
+        document.getElementById('increase').addEventListener('click', () => {
+            currentQuantity++;
+            quantityDisplay.textContent = currentQuantity;
+        });
+
+        document.getElementById('decrease').addEventListener('click', () => {
+            if (currentQuantity > 1) {
+                currentQuantity--;
+                quantityDisplay.textContent = currentQuantity;
+            }
+        });
+
+        confirmButton.addEventListener('click', () => {
+            const store = storeSelect.value;
+            selectedItems[store].push({ name: currentBeer, quantity: currentQuantity });
+            renderDeliverySections();
+            quantityPopup.classList.add('hidden');
+        });
+
+        cancelButton.addEventListener('click', () => {
+            quantityPopup.classList.add('hidden');
+        });
 
         function renderDeliverySections() {
             deliverySections.innerHTML = '';
-            for (const store in stores) {
+            for (const store in selectedItems) {
                 const section = document.createElement('div');
                 section.className = "mb-6";
                 section.innerHTML = `<h3 class="text-xl font-bold mb-2">${store}</h3>`;
+
                 const ul = document.createElement('ul');
                 ul.className = "bg-gray-100 p-4 rounded-lg shadow space-y-3";
-                stores[store].forEach(item => {
-                    if (item.quantity) {
-                        const li = document.createElement('li');
-                        li.className = "flex justify-between items-center py-2";
-                        li.innerHTML = `<span>${item.name}: ${item.quantity}</span>`;
-                        ul.appendChild(li);
-                    }
+                selectedItems[store].forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = "flex justify-between items-center py-2";
+                    li.textContent = `${item.name}: ${item.quantity}`;
+                    ul.appendChild(li);
                 });
                 section.appendChild(ul);
                 deliverySections.appendChild(section);
             }
         }
 
-        document.getElementById('increase-quantity').addEventListener('click', () => {
-            currentQuantity += 1;
-            quantityDisplay.textContent = currentQuantity;
-        });
+        document.getElementById('export-button').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-        document.getElementById('decrease-quantity').addEventListener('click', () => {
-            if (currentQuantity > 0) {
-                currentQuantity -= 1;
-                quantityDisplay.textContent = currentQuantity;
-            }
-        });
+            Object.keys(selectedItems).forEach((store, index) => {
+                if (index !== 0) doc.addPage();
+                doc.text(store, 10, 10);
 
-        document.getElementById('confirm-quantity').addEventListener('click', () => {
-            if (selectedBeer && currentQuantity > 0) {
-                selectedBeer.quantity = currentQuantity;
-                renderDeliverySections();
-            }
-            quantityPopup.classList.add('hidden');
-        });
+                selectedItems[store].forEach((item, i) => {
+                    doc.text(`${i + 1}. ${item.name} - Quantity: ${item.quantity}`, 10, 20 + i * 10);
+                });
 
-        document.getElementById('cancel-popup').addEventListener('click', () => {
-            quantityPopup.classList.add('hidden');
+                if (storeNotes[store]) {
+                    doc.text(`Notes: ${storeNotes[store]}`, 10, 100);
+                }
+            });
+
+            doc.save('inventory.pdf');
         });
 
         storeSelect.addEventListener('change', () => {
