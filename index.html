@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -44,29 +43,6 @@
         }
         .btn-primary:hover {
             background-color: #000000;
-        }
-        .quantity-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            width: 90%;
-            max-width: 400px;
-        }
-        .quantity-popup button {
-            width: 48%;
-            padding: 1rem;
-            font-size: 1.2rem;
-        }
-        .quantity-popup .quantity-controls button {
-            width: 64px;
-            height: 64px;
-            font-size: 2rem;
         }
     </style>
 </head>
@@ -114,30 +90,42 @@
                 </div>
             </div>
             <div class="mt-6 flex gap-4">
-                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export to PDF</button>
+                <button id="export-button" class="btn-primary px-4 py-2 rounded-lg shadow">Export PDF</button>
+                <button id="email-button" class="btn-primary px-4 py-2 rounded-lg shadow">Email PDF</button>
             </div>
         </section>
     </main>
 
-    <div id="quantity-popup" class="quantity-popup hidden">
-        <h3 class="text-2xl font-bold mb-4 text-center">Select Quantity</h3>
-        <div class="quantity-controls flex justify-center items-center mb-4">
-            <button id="decrease" class="btn-primary">-</button>
-            <span id="quantity" class="text-3xl mx-4">1</span>
-            <button id="increase" class="btn-primary">+</button>
-        </div>
-        <div class="flex justify-between">
-            <button id="cancel-button" class="bg-red-500 text-white rounded-lg">Cancel</button>
-            <button id="confirm-button" class="bg-green-500 text-white rounded-lg">Confirm</button>
-        </div>
-    </div>
-
     <script>
         const stores = {
-            "Tom's Variety": [],
-            "Herms Sports": [],
-            "Kilworth HH": [],
-            "St. Thomas HH": []
+            "Tom's Variety": [
+                { name: "BSA Blonde Pilsner", image: "https://via.placeholder.com/150" },
+                { name: "Raspberry Ale", image: "https://via.placeholder.com/150" },
+                { name: "Lime Lager", image: "https://via.placeholder.com/150" },
+                { name: "Orange Wheat", image: "https://via.placeholder.com/150" },
+                { name: "Golden Stout", image: "https://via.placeholder.com/150" }
+            ],
+            "Herms Sports": [
+                { name: "IPA Classic", image: "https://via.placeholder.com/150" },
+                { name: "Dark Porter", image: "https://via.placeholder.com/150" },
+                { name: "Cherry Sour", image: "https://via.placeholder.com/150" },
+                { name: "Mango Ale", image: "https://via.placeholder.com/150" },
+                { name: "Pale Ale", image: "https://via.placeholder.com/150" }
+            ],
+            "Kilworth HH": [
+                { name: "Citrus IPA", image: "https://via.placeholder.com/150" },
+                { name: "Hoppy Lager", image: "https://via.placeholder.com/150" },
+                { name: "Berry Wheat", image: "https://via.placeholder.com/150" },
+                { name: "Peach Ale", image: "https://via.placeholder.com/150" },
+                { name: "Amber Stout", image: "https://via.placeholder.com/150" }
+            ],
+            "St. Thomas HH": [
+                { name: "Classic Ale", image: "https://via.placeholder.com/150" },
+                { name: "Honey Wheat", image: "https://via.placeholder.com/150" },
+                { name: "Cranberry Sour", image: "https://via.placeholder.com/150" },
+                { name: "Tropical IPA", image: "https://via.placeholder.com/150" },
+                { name: "Roasted Porter", image: "https://via.placeholder.com/150" }
+            ]
         };
 
         const selectedItems = {
@@ -157,13 +145,7 @@
         const storeSelect = document.getElementById('store');
         const beerList = document.getElementById('beer-list');
         const deliverySections = document.getElementById('delivery-sections');
-        const quantityPopup = document.getElementById('quantity-popup');
-        const quantityDisplay = document.getElementById('quantity');
-        const confirmButton = document.getElementById('confirm-button');
-        const cancelButton = document.getElementById('cancel-button');
-
-        let currentQuantity = 1;
-        let currentBeer = null;
+        const notesSections = document.getElementById('notes-section');
 
         function renderBeerList(store) {
             beerList.innerHTML = '';
@@ -171,42 +153,62 @@
                 const beerItem = document.createElement('div');
                 beerItem.className = "beer-item p-4 border rounded-lg shadow-md hover:shadow-lg";
                 beerItem.innerHTML = `
-                    <p class="font-semibold text-center">${beer}</p>
-                    <button class="btn-primary w-full mt-3" onclick="openQuantityPopup('${beer}')">Add</button>
+                    <img src="${beer.image}" alt="${beer.name}" class="w-full h-32 object-cover rounded-md mb-3">
+                    <p class="font-semibold text-center">${beer.name}</p>
+                    <button class="add-button bg-blue-600 text-white px-4 py-2 rounded-lg mt-3 w-full hover:bg-blue-700" data-name="${beer.name}">Add</button>
                 `;
                 beerList.appendChild(beerItem);
             });
+
+            document.querySelectorAll('.add-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const beerName = button.getAttribute('data-name');
+                    const quantityWindow = document.createElement('div');
+                    quantityWindow.className = "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50";
+                    quantityWindow.innerHTML = `
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-72">
+                            <h2 class="text-lg font-semibold mb-4">Enter Quantity for ${beerName}</h2>
+                            <div class="flex items-center justify-center mb-4">
+                                <button id="decrease-quantity" class="bg-gray-200 text-lg px-4 py-2 rounded-lg">-</button>
+                                <input id="quantity-input" type="number" value="1" min="1" class="w-16 text-center mx-2 border rounded-lg">
+                                <button id="increase-quantity" class="bg-gray-200 text-lg px-4 py-2 rounded-lg">+</button>
+                            </div>
+                            <div class="flex justify-between">
+                                <button id="confirm-quantity" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Confirm</button>
+                                <button id="cancel-quantity" class="bg-gray-400 text-white px-4 py-2 rounded-lg">Cancel</button>
+                            </div>
+                        </div>
+                    `;
+
+                    document.body.appendChild(quantityWindow);
+
+                    const quantityInput = document.getElementById('quantity-input');
+
+                    document.getElementById('decrease-quantity').addEventListener('click', () => {
+                        if (quantityInput.value > 1) {
+                            quantityInput.value--;
+                        }
+                    });
+
+                    document.getElementById('increase-quantity').addEventListener('click', () => {
+                        quantityInput.value++;
+                    });
+
+                    document.getElementById('confirm-quantity').addEventListener('click', () => {
+                        const quantity = parseInt(quantityInput.value, 10);
+                        if (!isNaN(quantity) && quantity > 0) {
+                            selectedItems[store].push({ name: beerName, quantity });
+                            renderDeliverySections();
+                            document.body.removeChild(quantityWindow);
+                        }
+                    });
+
+                    document.getElementById('cancel-quantity').addEventListener('click', () => {
+                        document.body.removeChild(quantityWindow);
+                    });
+                });
+            });
         }
-
-        function openQuantityPopup(beer) {
-            currentBeer = beer;
-            currentQuantity = 1;
-            quantityDisplay.textContent = currentQuantity;
-            quantityPopup.classList.remove('hidden');
-        }
-
-        document.getElementById('increase').addEventListener('click', () => {
-            currentQuantity++;
-            quantityDisplay.textContent = currentQuantity;
-        });
-
-        document.getElementById('decrease').addEventListener('click', () => {
-            if (currentQuantity > 1) {
-                currentQuantity--;
-                quantityDisplay.textContent = currentQuantity;
-            }
-        });
-
-        confirmButton.addEventListener('click', () => {
-            const store = storeSelect.value;
-            selectedItems[store].push({ name: currentBeer, quantity: currentQuantity });
-            renderDeliverySections();
-            quantityPopup.classList.add('hidden');
-        });
-
-        cancelButton.addEventListener('click', () => {
-            quantityPopup.classList.add('hidden');
-        });
 
         function renderDeliverySections() {
             deliverySections.innerHTML = '';
@@ -217,10 +219,16 @@
 
                 const ul = document.createElement('ul');
                 ul.className = "bg-gray-100 p-4 rounded-lg shadow space-y-3";
-                selectedItems[store].forEach(item => {
+                selectedItems[store].forEach((item, index) => {
                     const li = document.createElement('li');
                     li.className = "flex justify-between items-center py-2";
-                    li.textContent = `${item.name}: ${item.quantity}`;
+                    li.innerHTML = `
+                        <span>${item.name}: ${item.quantity}</span>
+                        <div>
+                            <button class="edit-button text-blue-600 mr-4" data-store="${store}" data-index="${index}">Edit</button>
+                            <button class="delete-button text-red-600" data-store="${store}" data-index="${index}">Delete</button>
+                        </div>
+                    `;
                     ul.appendChild(li);
                 });
                 section.appendChild(ul);
@@ -228,28 +236,19 @@
             }
         }
 
-        document.getElementById('export-button').addEventListener('click', () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            Object.keys(selectedItems).forEach((store, index) => {
-                if (index !== 0) doc.addPage();
-                doc.text(store, 10, 10);
-
-                selectedItems[store].forEach((item, i) => {
-                    doc.text(`${i + 1}. ${item.name} - Quantity: ${item.quantity}`, 10, 20 + i * 10);
-                });
-
-                if (storeNotes[store]) {
-                    doc.text(`Notes: ${storeNotes[store]}`, 10, 100);
+        function updateNotesVisibility(currentStore) {
+            Array.from(notesSections.children).forEach(note => {
+                if (note.id === `${currentStore}-notes`) {
+                    note.classList.remove('hidden');
+                } else {
+                    note.classList.add('hidden');
                 }
             });
-
-            doc.save('inventory.pdf');
-        });
+        }
 
         storeSelect.addEventListener('change', () => {
             renderBeerList(storeSelect.value);
+            updateNotesVisibility(storeSelect.value);
         });
 
         renderBeerList(storeSelect.value);
