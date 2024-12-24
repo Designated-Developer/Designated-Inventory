@@ -185,6 +185,29 @@
             }
 
             updateNotesVisibility(storeSelect.value);
+
+            document.querySelectorAll('.edit-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const store = e.target.getAttribute('data-store');
+                    const index = e.target.getAttribute('data-index');
+                    const newQuantity = prompt(`Edit quantity for ${selectedItems[store][index].name}:`, selectedItems[store][index].quantity);
+                    if (newQuantity && !isNaN(newQuantity)) {
+                        selectedItems[store][index].quantity = parseInt(newQuantity, 10);
+                        renderDeliverySections();
+                    } else {
+                        alert('Please enter a valid number.');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const store = e.target.getAttribute('data-store');
+                    const index = e.target.getAttribute('data-index');
+                    selectedItems[store].splice(index, 1);
+                    renderDeliverySections();
+                });
+            });
         }
 
         function updateNotesVisibility(currentStore) {
