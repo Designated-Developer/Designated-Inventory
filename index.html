@@ -192,6 +192,36 @@
             });
         }
 
+        function exportToCSV() {
+            let csvContent = "Store,Beer Name,Quantity,Notes\n";
+            for (const store in selectedItems) {
+                selectedItems[store].forEach(item => {
+                    csvContent += `${store},${item.name},${item.quantity},${storeNotes[store]}\n`;
+                });
+            }
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "inventory.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function emailCSV() {
+            let csvContent = "Store,Beer Name,Quantity,Notes\n";
+            for (const store in selectedItems) {
+                selectedItems[store].forEach(item => {
+                    csvContent += `${store},${item.name},${item.quantity},${storeNotes[store]}\n`;
+                });
+            }
+            const mailtoLink = `mailto:?subject=Inventory Report&body=${encodeURIComponent(csvContent)}`;
+            window.location.href = mailtoLink;
+        }
+
+        document.getElementById('export-button').addEventListener('click', exportToCSV);
+        document.getElementById('email-button').addEventListener('click', emailCSV);
+
         storeSelect.addEventListener('change', () => {
             renderBeerList(storeSelect.value);
             updateNotesVisibility(storeSelect.value);
