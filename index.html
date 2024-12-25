@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,142 +12,57 @@
             background-color: #ffffff;
             color: #000000;
         }
-
         header {
             background: linear-gradient(to right, #000080, #000000);
             color: white;
             padding: 1.5rem;
             border-radius: 8px;
         }
-
         main {
             background: #f8f8f8;
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
         #beer-list .beer-item {
             background: linear-gradient(to bottom, #ffffff, #e6e6e6);
             transition: transform 0.2s ease-in-out;
         }
-
         #beer-list .beer-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
-
         button {
             transition: background-color 0.2s ease-in-out;
         }
-
         button:hover {
             background-color: #000080;
         }
-
         .btn-primary {
             background-color: #000080;
             color: white;
         }
-
         .btn-primary:hover {
             background-color: #000000;
         }
-
         .quantity-popup button {
             font-size: 1.5rem;
             width: 80px;
             height: 80px;
         }
-
         .quantity-popup .action-buttons button {
             width: 100%;
             padding: 1.2rem;
             font-size: 1.2rem;
         }
-
         .note-textarea {
             width: 100%;
             padding: 1rem;
             border-radius: 8px;
             border: 1px solid #ccc;
         }
-
-        .beer-item p {
-            text-align: center;
-        }
-
-        /* Updated popup styling */
-        .quantity-popup-container {
-            background: rgba(0, 0, 0, 0.6);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .quantity-popup {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            width: 320px;
-            text-align: center;
-            animation: popupShow 0.3s forwards;
-        }
-
-        @keyframes popupShow {
-            from {
-                transform: scale(0);
-            }
-
-            to {
-                transform: scale(1);
-            }
-        }
-
-        /* Style for the buttons */
-        .quantity-button {
-            font-size: 2rem;
-            padding: 10px;
-            background-color: #008CBA;
-            color: white;
-            border-radius: 10px;
-            width: 70px;
-            height: 70px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .quantity-button:disabled {
-            background-color: #d3d3d3;
-            cursor: not-allowed;
-        }
-
-        .confirm-btn,
-        .cancel-btn {
-            font-size: 1.2rem;
-            padding: 1rem;
-            border-radius: 10px;
-            width: 100%;
-        }
-
-        .cancel-btn {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .confirm-btn {
-            background-color: #4CAF50;
-            color: white;
-        }
     </style>
 </head>
-
 <body class="bg-white">
     <header class="text-center">
         <h1 class="text-4xl font-extrabold">Designated Drinks</h1>
@@ -163,7 +77,6 @@
                 <option value="Herms Sports">Herms Sports</option>
                 <option value="Kilworth HH">Kilworth HH</option>
                 <option value="St. Thomas HH">St. Thomas HH</option>
-                 <option value="Blue J">Blue J</option>
             </select>
         </div>
 
@@ -173,7 +86,6 @@
         <section>
             <h2 class="text-2xl font-bold mb-4">Deliver to</h2>
             <div id="delivery-sections" class="space-y-4">
-                <!-- Dynamic delivery sections will be rendered here -->
             </div>
 
             <h3 class="text-xl font-semibold mb-2">Notes for Each Store</h3>
@@ -190,9 +102,6 @@
                 <div id="St. Thomas HH-notes">
                     <textarea class="note-textarea" placeholder="Add notes for St. Thomas HH..."></textarea>
                 </div>
-                 <div id="Blue J-notes">
-                    <textarea class="note-textarea" placeholder="Add notes for Blue J..."></textarea>
-                </div>
             </div>
 
             <div class="mt-6 flex gap-4">
@@ -205,54 +114,34 @@
     <script>
         const stores = {
             "Tom's Variety": [
-                { name: "Athletic Brewing Company (Non-Alcoholic) Cerveza Athelica", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/sparkly_6.png?v=1683676464" },
-                { name: "Athletic Brewing Company (Non-Alcoholic) Free Wave Hazy IPA", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/FreeWave.png?v=1651757224" },
-                { name: "Athletic Brewing Company (Non-Alcoholic) Ripe Pursuit Radler", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/cause_2.png?v=1715606681" },
-                { name: "Athletic Brewing Company (Non-Alcoholic) Run Wild IPA", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/RunWild.png?v=1651757287" },
-                { name: "Athletic Brewing Company (Non-Alcoholic) Upside Dawn Golden Ale", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/products/UpsideDawn.png?v=1651757075" },
-                { name: "Athletic Brewing Company (Non-Alcoholic) Wit's Peak", image: "https://cdn.shopify.com/s/files/1/0638/0100/0159/files/peak_1.png?v=1732022031" }
+                { name: "BSA Blonde Pilsner", image: "https://via.placeholder.com/150" },
+                { name: "Raspberry Ale", image: "https://via.placeholder.com/150" },
             ],
             "Herms Sports": [
                 { name: "IPA Classic", image: "https://via.placeholder.com/150" },
                 { name: "Dark Porter", image: "https://via.placeholder.com/150" },
-                { name: "Cherry Sour", image: "https://via.placeholder.com/150" },
-                { name: "Mango Ale", image: "https://via.placeholder.com/150" },
-                { name: "Pale Ale", image: "https://via.placeholder.com/150" }
             ],
             "Kilworth HH": [
                 { name: "Citrus IPA", image: "https://via.placeholder.com/150" },
                 { name: "Hoppy Lager", image: "https://via.placeholder.com/150" },
-                { name: "Berry Wheat", image: "https://via.placeholder.com/150" },
-                { name: "Peach Ale", image: "https://via.placeholder.com/150" },
-                { name: "Amber Stout", image: "https://via.placeholder.com/150" }
             ],
             "St. Thomas HH": [
                 { name: "Classic Ale", image: "https://via.placeholder.com/150" },
                 { name: "Honey Wheat", image: "https://via.placeholder.com/150" },
-                { name: "Cranberry Sour", image: "https://via.placeholder.com/150" },
-                { name: "Tropical IPA", image: "https://via.placeholder.com/150" },
-                { name: "Roasted Porter", image: "https://via.placeholder.com/150" }
-         ],
-            "Blue J": [
-                { name: "Classic Ale", image: "https://via.placeholder.com/150" },
-                { name: "Honey Wheat", image: "https://via.placeholder.com/150" },
-                { name: "Cranberry Sour", image: "https://via.placeholder.com/150" },
-                { name: "Tropical IPA", image: "https://via.placeholder.com/150" },
-                { name: "Roasted Porter", image: "https://via.placeholder.com/150" }
             ]
         };
 
-        let selectedItems = {
-            "Tom's Variety": [],
-            "Herms Sports": [],
-            "Kilworth HH": [],
-            "St. Thomas HH": [],
-            "Blue J": []
+        const storeNotes = {
+            "Tom's Variety": "",
+            "Herms Sports": "",
+            "Kilworth HH": "",
+            "St. Thomas HH": ""
         };
 
         const storeSelect = document.getElementById('store');
         const beerList = document.getElementById('beer-list');
         const deliverySections = document.getElementById('delivery-sections');
+        const notesSections = document.getElementById('notes-section');
 
         function renderBeerList(store) {
             beerList.innerHTML = '';
@@ -304,7 +193,7 @@
 
                     quantityWindow.querySelector('.confirm-btn').addEventListener('click', () => {
                         const quantity = quantityWindow.querySelector('input').value;
-                        selectedItems[store].push({ name: beerName, quantity });
+                        storeNotes[store] = quantity;
                         quantityWindow.remove();
                         renderBeerList(store);
                         renderDeliverySections();
@@ -318,14 +207,12 @@
 
         function renderDeliverySections() {
             deliverySections.innerHTML = '';
-            Object.keys(selectedItems).forEach(store => {
+            Object.keys(storeNotes).forEach(store => {
                 const deliverySection = document.createElement('div');
                 deliverySection.className = 'p-4 border rounded-lg shadow-md mb-4';
                 deliverySection.innerHTML = `
                     <h4 class="font-semibold">${store}</h4>
-                    <ul class="list-disc ml-6">
-                        ${selectedItems[store].map(item => `<li>${item.name} - ${item.quantity}</li>`).join('')}
-                    </ul>
+                    <p>Notes: ${storeNotes[store]}</p>
                 `;
                 deliverySections.appendChild(deliverySection);
             });
@@ -342,14 +229,14 @@
             doc.text("Inventory Report", 14, 20);
 
             let y = 30;
-            Object.keys(selectedItems).forEach(store => {
+            Object.keys(storeNotes).forEach(store => {
                 doc.setFontSize(14);
                 doc.text(store, 14, y);
                 y += 10;
-                selectedItems[store].forEach(item => {
-                    doc.text(`${item.name} - ${item.quantity}`, 20, y);
+                if (storeNotes[store]) {
+                    doc.text(`Notes: ${storeNotes[store]}`, 20, y);
                     y += 10;
-                });
+                }
                 y += 10;
             });
 
@@ -357,5 +244,4 @@
         }
     </script>
 </body>
-
 </html>
